@@ -4,6 +4,7 @@ import {InputItem, Toast} from "antd-mobile";
 import Super from "./../../super";
 import "./index.less"
 import Button from "antd-mobile/es/button";
+import Units from "../../units";
 
 class Test extends Component{
     state = {
@@ -24,8 +25,14 @@ class Test extends Component{
                     if(res.status=="504"){
                         Toast.info('服务器连接失败');
                     }
-                    else if(res.status=="error"){
-                        Toast.info(res.errorMsg);
+                    else{
+                        if(res.status === 'suc'){
+                            window.location.href="/#/testHome";
+                            Units.setLocalStorge("tokenName", res.token)
+                        }
+                        else if(res.status=="error"){
+                            Toast.info(res.errorMsg);
+                        }
                     }
                 });
             }

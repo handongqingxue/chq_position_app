@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "rc-form": "^2.4.11",
     "axios": "^0.18.0",
+    "jquery": "^3.5.1",
+    "rc-form": "^2.4.11",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^4.3.1",

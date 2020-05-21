@@ -4,14 +4,33 @@ import Nav from "../../components/Nav";
 import Super from "../../super"
 import {Accordion, Icon, List, Toast, Popover} from "antd-mobile";
 import Storage from "../../units/storage";
-import "./index.less"
+import "./index.less";
+import logoImg from "../../image/001.png";
+import ssdwImg from "../../image/002.png";
+import bjtjImg from "../../image/003.png";
+import ryzzImg from "../../image/004.png";
+import $ from 'jquery';
 const Item = Popover.Item;
 
 class TestHome extends Component{
     state={homeState:[],menuTreeNode:[]}
 
     componentDidMount() {
-        this.request()
+        this.request();
+        this.initLogoImgSize();
+        this.initNavListDiv();
+    }
+    initLogoImgSize=()=>{
+        let bodyWidth=$("body").css("width");
+        bodyWidth=bodyWidth.substring(0,bodyWidth.length-2);
+        $("#logo_img").css("width",bodyWidth+"px");
+        $("#logo_img").css("height",bodyWidth*496/809+"px");
+    }
+    initNavListDiv=()=>{
+        let nldw=$("#nav_list_div").css("width");
+        $("#nav_list_div").css("height",nldw);
+        let item_div_width=$(".nav_list_div .item_div").css("width");
+        $(".nav_list_div .item_div").css("height",item_div_width);
     }
     request = () => {
         Super.super({
@@ -73,19 +92,36 @@ class TestHome extends Component{
     }
 
     render() {
-        const {homeData,menuTreeNode}=this.state
-        const homePop=[(<div style={{marginTop:'10px'}}>aaa</div>)];
         return(
             <div>
-                <Nav
-                title="HYDROCARBON"
-                data={homeData}
-                handleSelected={this.handlePop}
-                pops={homePop}
-                level={1}
-                setBlocks={this.setBlocks}
-                />
-                <div className="item_div">{menuTreeNode}</div>
+                <div className="top_div">首页</div>
+                <img id="logo_img" src={logoImg}/>
+                <div className="nav_list_div" id="nav_list_div">
+                    <div className="item_div ssdw_div">
+                        <img src={ssdwImg}/>
+                        <div className="text_div">实时定位</div>
+                    </div>
+                    <div className="item_div bjtj_div">
+                        <img src={bjtjImg}/>
+                        <div className="text_div">报警统计</div>
+                    </div>
+                    <div className="item_div ryzz_div">
+                        <img src={ryzzImg}/>
+                        <div className="text_div">人员追踪</div>
+                    </div>
+                    <div className="item_div lsgj_div">
+                        <img src={ryzzImg}/>
+                        <div className="text_div">历史轨迹</div>
+                    </div>
+                    <div className="item_div dwpz_div">
+                        <img src={ryzzImg}/>
+                        <div className="text_div">定位配置</div>
+                    </div>
+                    <div className="item_div tcdl_div">
+                        <img src={ryzzImg}/>
+                        <div className="text_div">退出登录</div>
+                    </div>
+                </div>
             </div>
         );
     }
