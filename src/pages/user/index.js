@@ -19,6 +19,7 @@ export default class User extends Component {
 		Super.super({
 			url:'api2/meta/user/current_user',                   
 		}).then((res)=>{
+			console.log(res);
 			this.setState({
 				userName:res.user.username,
 				code:res.user.id
@@ -50,7 +51,7 @@ export default class User extends Component {
 					pops={userPop}
 					isUserpage="true"
                     />
-					{code?<Details 
+					{code?<Details
 								onRef = {this.onRef}
 								menuId="user"
 								code={code}

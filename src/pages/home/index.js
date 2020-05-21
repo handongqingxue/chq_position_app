@@ -39,7 +39,7 @@ class Home extends Component {
 			}
 		})
 		const menuTreeNode = this.renderMenu(blockList)
-		const data = this.renderdata(blockList)		
+		const data = this.renderdata(blockList)
 		Storage.menuList=data   //普通菜单存储
 		this.setState({
 			menuTreeNode,
@@ -69,7 +69,7 @@ class Home extends Component {
                         </Accordion.Panel>
 			}
 			return <List.Item key={item.title}>
-                        <NavLink to={`/${item.id}`} style={{color:"#333"}}>{item.title}</NavLink>
+                        <NavLink to={`/${item.id}`} style={{color:"#333"}}>{item.id}-{item.title}</NavLink>
                         <Icon type="right" size="sm"/>
                     </List.Item>
 		})
@@ -86,8 +86,8 @@ class Home extends Component {
 		return(
 			<div className="home">
                 <Nav 
-                    title="HYDROCARBON" 
-                    data={homeData} 
+                    title="HYDROCARBON"
+                    data={homeData}
                     handleSelected={this.handlePop}
 					pops={homePop}
 					level={1}

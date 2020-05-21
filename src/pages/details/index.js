@@ -91,6 +91,7 @@ class Details extends Component {
 			url =`api2/meta/tmpl/${menuId}/dtmpl/normal/`
 		}
 		Super.super({url,method:"GET",}).then((res) => {
+			console.log("==="+JSON.stringify(res));
 			const premises=res.config.premises
 			const menuTitle=res.menu?res.menu.title:null
 			const {scrollIds}=this.state

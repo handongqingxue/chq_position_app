@@ -2,6 +2,7 @@ import {createForm} from "rc-form";
 import React, {Component} from 'react'
 import {InputItem, Toast} from "antd-mobile";
 import Super from "./../../super";
+import "./index.less"
 import Button from "antd-mobile/es/button";
 
 class Test extends Component{
@@ -36,8 +37,8 @@ class Test extends Component{
     render(){
         const {username,password}=this.state
         const {getFieldProps,getFieldError}=this.props.form;
-        return <div>
-            <h1>欢迎登录</h1>
+        return <div className="main_div">
+            <h1 className="title_h1">人员定位系统手机版</h1>
         <InputItem {...getFieldProps("username",{initialValue:username})} placeholder="请输入用户名"/>
         <InputItem {...getFieldProps("password",{initialValue:password})} placeholder="请输入密码"/>
             <Button type="primary" onClick={this.submit}>登录</Button>

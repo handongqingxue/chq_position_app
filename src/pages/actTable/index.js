@@ -41,6 +41,7 @@ export default class ActTable extends Component {
 	}
 	//isPushUrl=true时，后退获得的url已有参数，不需要push链接,不然会报错
 	requestList = (menuId, data, isPushUrl) => {
+		console.log("menuId==="+menuId);
 		this.setState({
 			animating: true
 		})
@@ -56,6 +57,9 @@ export default class ActTable extends Component {
 				passive: false
 			})
 			if(res) {
+				console.log("requestList==="+JSON.stringify(res));
+				console.log("ltmpl==="+JSON.stringify(res.ltmpl));
+				console.log("columns==="+JSON.stringify(res.ltmpl.columns));
 				const fieldIds=[]
 				res.ltmpl.criterias.forEach((item)=>{
 					if(item.inputType==="select"){
@@ -94,11 +98,13 @@ export default class ActTable extends Component {
 			method:'GET',
 			data           
 		}).then((res)=>{
+			console.log("res==="+JSON.stringify(res));
 			Storage[`${menuId}`]=res
 			this.sessionTodo(res)
 		})          
 	}
 	sessionTodo=(data)=>{
+		console.log("sessionTodo==="+JSON.stringify(data));
 		const {listLtmpl}=this.state
 		let isStat=true
         data.entities.forEach((item)=>{
