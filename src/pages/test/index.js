@@ -12,36 +12,61 @@ class Test extends Component{
     }
 
     submit=()=>{
-        this.props.form.validateFields((error,value)=>{
-
-
-            if(!error){
+        if(this.checkUsername()){
+            if(this.checkPassword()){
+                let username=this.refs.username_inp.value;
+                let password=this.refs.password_inp.value;
                 Super.super({
                     url:"api2/auth/token",
                     method:"get",
-                    query:value
+                    query:{username:username,password:password}
                 }).then((res)=>{
                     if(res.status=="504"){
                         Toast.info('服务器连接失败');
                     }
-                    else{
-                        Toast.info(res.status);
+                    else if(res.status=="error"){
+                        Toast.info(res.errorMsg);
                     }
                 });
             }
-            else
-                Toast.info(222);
-        });
+        }
+    }
+    checkUsername=()=>{
+        let username=this.refs.username_inp.value;
+        if(username==""||username==null){
+            Toast.info("请输入用户名");
+            return false;
+        }
+        else
+            return true;
+    }
+    checkPassword=()=>{
+        let password=this.refs.password_inp.value;
+        if(password==""||password==null){
+            Toast.info("请输入密码");
+            return false;
+        }
+        else
+            return true;
     }
 
     render(){
         const {username,password}=this.state
-        const {getFieldProps,getFieldError}=this.props.form;
         return <div className="main_div">
             <h1 className="title_h1">人员定位系统手机版</h1>
-        <InputItem {...getFieldProps("username",{initialValue:username})} placeholder="请输入用户名"/>
-        <InputItem {...getFieldProps("password",{initialValue:password})} placeholder="请输入密码"/>
-            <Button type="primary" onClick={this.submit}>登录</Button>
+            <div className="username_div">
+                <span className="iconfont">&#xe74c;</span>
+                <div className="username_inp_div">
+                    <input className="username_inp" ref="username_inp" placeholder="请输入用户名"/>
+                </div>
+            </div>
+            <div className="password_div">
+                <span className="iconfont">&#xe736;</span>
+                <div className="password_inp_div">
+                    <input className="password_inp" ref="password_inp" type="password" placeholder="请输入密码"/>
+                </div>
+            </div>
+            <div className="loginBut_div" onClick={this.submit}>登录</div>
         </div>
     }
 }
