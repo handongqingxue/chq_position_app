@@ -5,12 +5,13 @@ import {Accordion, Icon, List, Toast, Popover} from "antd-mobile";
 import Storage from "../../units/storage";
 import "./index.less";
 import ssdwImg from "../../image/002.png";
-import bjxxImg from "../../image/003.png";
-import bjtjImg from "../../image/004.png";
-import ryzzImg from "../../image/005.png";
-import lsgjImg from "../../image/006.png";
-import dwpzImg from "../../image/007.png";
-import tcdlImg from "../../image/008.png";
+import ryzzImg from "../../image/003.png";
+import gjfxImg from "../../image/004.png";
+import bjsjImg from "../../image/005.png";
+import sjtjImg from "../../image/006.png";
+import dzxjImg from "../../image/007.png";
+import dwpzImg from "../../image/008.png";
+import tcdlImg from "../../image/009.png";
 import $ from 'jquery';
 const Item = Popover.Item;
 
@@ -101,21 +102,25 @@ class TestHome extends Component{
                         <img src={ssdwImg}/>
                         <div className="text_div">实时定位</div>
                     </div>
-                    <div className="item_div bjxx_div" onClick={this.goPage.bind(this,'testBjInfo')}>
-                        <img src={bjxxImg}/>
-                        <div className="text_div">报警信息</div>
-                    </div>
-                    <div className="item_div bjtj_div">
-                        <img src={bjtjImg}/>
-                        <div className="text_div">报警统计</div>
-                    </div>
                     <div className="item_div ryzz_div">
                         <img src={ryzzImg}/>
                         <div className="text_div">人员追踪</div>
                     </div>
-                    <div className="item_div lsgj_div">
-                        <img src={lsgjImg}/>
-                        <div className="text_div">历史轨迹</div>
+                    <div className="item_div gjfx_div">
+                        <img src={gjfxImg}/>
+                        <div className="text_div">轨迹分析</div>
+                    </div>
+                    <div className="item_div bjsj_div" onClick={this.goPage.bind(this,'testBjInfo')}>
+                        <img src={bjsjImg}/>
+                        <div className="text_div">报警事件</div>
+                    </div>
+                    <div className="item_div sjtj_div">
+                        <img src={sjtjImg}/>
+                        <div className="text_div">数据统计</div>
+                    </div>
+                    <div className="item_div dzxj_div">
+                        <img src={dzxjImg}/>
+                        <div className="text_div">电子巡检</div>
                     </div>
                     <div className="item_div dwpz_div">
                         <img src={dwpzImg}/>

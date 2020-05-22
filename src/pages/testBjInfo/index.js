@@ -8,11 +8,14 @@ class TestBjInfo extends Component{
     componentDidMount(){
         $("html").css("background-color","#fff");
     }
+    goPage=(value)=>{
+        this.props.history.push(`/${value}`);
+    }
 
     render(){
         return <div className="bjInfoPage_div">
             <div className="top_div">报警信息</div>
-            <div className="back_but_div" onClick={this.goPage.bind('')}>&lt;返回</div>
+            <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
             <div>
                 区域：
                 <select>
