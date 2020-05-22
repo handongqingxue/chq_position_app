@@ -5,11 +5,15 @@ import Super from "./../../super";
 import "./index.less"
 import Button from "antd-mobile/es/button";
 import Units from "../../units";
+import $ from "jquery";
 
 class Test extends Component{
     state = {
         username:"",
         password:"",
+    }
+    componentDidMount() {
+        $("html").css("background-color","#fff");
     }
 
     submit=()=>{
@@ -59,21 +63,23 @@ class Test extends Component{
 
     render(){
         const {username,password}=this.state
-        return <div className="main_div">
-            <h1 className="title_h1">人员定位系统手机版</h1>
-            <div className="username_div">
-                <span className="iconfont">&#xe74c;</span>
-                <div className="username_inp_div">
-                    <input className="username_inp" ref="username_inp" placeholder="请输入用户名"/>
+        return <div className="loginPage_div">
+                <div className="main_div">
+                <h1 className="title_h1">人员定位系统手机版</h1>
+                <div className="username_div">
+                    <span className="iconfont">&#xe74c;</span>
+                    <div className="username_inp_div">
+                        <input className="username_inp" ref="username_inp" placeholder="请输入用户名"/>
+                    </div>
                 </div>
-            </div>
-            <div className="password_div">
-                <span className="iconfont">&#xe736;</span>
-                <div className="password_inp_div">
-                    <input className="password_inp" ref="password_inp" type="password" placeholder="请输入密码"/>
+                <div className="password_div">
+                    <span className="iconfont">&#xe736;</span>
+                    <div className="password_inp_div">
+                        <input className="password_inp" ref="password_inp" type="password" placeholder="请输入密码"/>
+                    </div>
                 </div>
+                <div className="loginBut_div" onClick={this.submit}>登录</div>
             </div>
-            <div className="loginBut_div" onClick={this.submit}>登录</div>
         </div>
     }
 }

@@ -1,11 +1,9 @@
 import {NavLink, withRouter} from "react-router-dom";
 import React, {Component} from 'react'
-import Nav from "../../components/Nav";
 import Super from "../../super"
 import {Accordion, Icon, List, Toast, Popover} from "antd-mobile";
 import Storage from "../../units/storage";
 import "./index.less";
-import logoImg from "../../image/001.png";
 import ssdwImg from "../../image/002.png";
 import bjtjImg from "../../image/003.png";
 import ryzzImg from "../../image/004.png";
@@ -16,22 +14,17 @@ class TestHome extends Component{
     state={homeState:[],menuTreeNode:[]}
 
     componentDidMount() {
-        this.request();
-        this.initLogoImgSize();
+        //this.request();
         this.initNavListDiv();
-    }
-    initLogoImgSize=()=>{
-        let bodyWidth=$("body").css("width");
-        bodyWidth=bodyWidth.substring(0,bodyWidth.length-2);
-        $("#logo_img").css("width",bodyWidth+"px");
-        $("#logo_img").css("height",bodyWidth*496/809+"px");
+        $("html").css("background-color","#154E6C");
     }
     initNavListDiv=()=>{
         let nldw=$("#nav_list_div").css("width");
-        $("#nav_list_div").css("height",nldw);
+        //$("#nav_list_div").css("height",nldw);
         let item_div_width=$(".nav_list_div .item_div").css("width");
         $(".nav_list_div .item_div").css("height",item_div_width);
     }
+    /*
     request = () => {
         Super.super({
             url: 'api2/meta/menu/get_blocks',
@@ -86,16 +79,15 @@ class TestHome extends Component{
         })
         return data
     }
-
-    handlePop = (value) => {
+     */
+    goPage = (value) => {
         this.props.history.push(`/${value}`)
     }
 
     render() {
         return(
-            <div>
-                <div className="top_div">首页</div>
-                <img id="logo_img" src={logoImg}/>
+            <div className="homePage_div">
+                <div className="top_div">辰麒人员定位管理系统</div>
                 <div className="nav_list_div" id="nav_list_div">
                     <div className="item_div ssdw_div">
                         <img src={ssdwImg}/>
@@ -117,11 +109,12 @@ class TestHome extends Component{
                         <img src={ryzzImg}/>
                         <div className="text_div">定位配置</div>
                     </div>
-                    <div className="item_div tcdl_div">
+                    <div className="item_div tcdl_div" onClick={this.goPage.bind(this,'test')}>
                         <img src={ryzzImg}/>
                         <div className="text_div">退出登录</div>
                     </div>
                 </div>
+                <div className="bqsy_div">版权所有2018-2020辰麒数维</div>
             </div>
         );
     }
