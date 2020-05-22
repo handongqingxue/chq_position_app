@@ -5,8 +5,12 @@ import {Accordion, Icon, List, Toast, Popover} from "antd-mobile";
 import Storage from "../../units/storage";
 import "./index.less";
 import ssdwImg from "../../image/002.png";
-import bjtjImg from "../../image/003.png";
-import ryzzImg from "../../image/004.png";
+import bjxxImg from "../../image/003.png";
+import bjtjImg from "../../image/004.png";
+import ryzzImg from "../../image/005.png";
+import lsgjImg from "../../image/006.png";
+import dwpzImg from "../../image/007.png";
+import tcdlImg from "../../image/008.png";
 import $ from 'jquery';
 const Item = Popover.Item;
 
@@ -22,7 +26,7 @@ class TestHome extends Component{
         let nldw=$("#nav_list_div").css("width");
         //$("#nav_list_div").css("height",nldw);
         let item_div_width=$(".nav_list_div .item_div").css("width");
-        $(".nav_list_div .item_div").css("height",item_div_width);
+        //$(".nav_list_div .item_div").css("height",item_div_width);
     }
     /*
     request = () => {
@@ -88,10 +92,15 @@ class TestHome extends Component{
         return(
             <div className="homePage_div">
                 <div className="top_div">辰麒人员定位管理系统</div>
+                <div className="main_div">
                 <div className="nav_list_div" id="nav_list_div">
                     <div className="item_div ssdw_div">
                         <img src={ssdwImg}/>
                         <div className="text_div">实时定位</div>
+                    </div>
+                    <div className="item_div bjxx_div">
+                        <img src={bjxxImg}/>
+                        <div className="text_div">报警信息</div>
                     </div>
                     <div className="item_div bjtj_div">
                         <img src={bjtjImg}/>
@@ -102,17 +111,18 @@ class TestHome extends Component{
                         <div className="text_div">人员追踪</div>
                     </div>
                     <div className="item_div lsgj_div">
-                        <img src={ryzzImg}/>
+                        <img src={lsgjImg}/>
                         <div className="text_div">历史轨迹</div>
                     </div>
                     <div className="item_div dwpz_div">
-                        <img src={ryzzImg}/>
+                        <img src={dwpzImg}/>
                         <div className="text_div">定位配置</div>
                     </div>
                     <div className="item_div tcdl_div" onClick={this.goPage.bind(this,'test')}>
-                        <img src={ryzzImg}/>
+                        <img src={tcdlImg}/>
                         <div className="text_div">退出登录</div>
                     </div>
+                </div>
                 </div>
                 <div className="bqsy_div">版权所有2018-2020辰麒数维</div>
             </div>
