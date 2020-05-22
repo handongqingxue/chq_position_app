@@ -60,6 +60,7 @@ class Home extends Component {
 		return data
 	}
 	renderMenu = (data) => {
+		console.log(data);
 		return data.map((item) => {
 			if(item.l2Menus) {
 				return <Accordion.Panel header={item.title} key={item.title}>

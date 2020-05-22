@@ -4,6 +4,7 @@ import Super from "../../super"
 import {Accordion, Icon, List, Toast, Popover} from "antd-mobile";
 import Storage from "../../units/storage";
 import "./index.less";
+import logoImg from "../../image/001.jpg";
 import ssdwImg from "../../image/002.png";
 import bjxxImg from "../../image/003.png";
 import bjtjImg from "../../image/004.png";
@@ -21,6 +22,9 @@ class TestHome extends Component{
         //this.request();
         this.initNavListDiv();
         $("html").css("background-color","#154E6C");
+        let logoiw=$("#logo_img").css("width");
+        logoiw=logoiw.substring(0,logoiw.length-2);
+        $("#logo_img").css("height",logoiw*428/1528+"px");
     }
     initNavListDiv=()=>{
         let nldw=$("#nav_list_div").css("width");
@@ -94,6 +98,7 @@ class TestHome extends Component{
                 <div className="top_div">辰麒人员定位管理系统</div>
                 <div className="main_div">
                 <div className="nav_list_div" id="nav_list_div">
+                    <img className="logo_img" id="logo_img" src={logoImg}/>
                     <div className="item_div ssdw_div">
                         <img src={ssdwImg}/>
                         <div className="text_div">实时定位</div>
