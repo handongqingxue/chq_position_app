@@ -92,6 +92,9 @@ class TestBjInfo extends Component{
     render(){
         const {bjqySelectList,bjlxSelectList,bjList}=this.state
         return <div className="bjInfoPage_div">
+            <div className="bj_detail_dialog_div">
+                <div className="main_div"></div>
+            </div>
             <div className="top_div">报警信息</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
             <div className="where_search_div">
@@ -124,7 +127,17 @@ class TestBjInfo extends Component{
                                             item.cellMap[192].indexOf("人员长时间静止")!=-1?rycsjjzImg:""
                             }/>
                             <div className="bjlx_div">{item.cellMap[192]}</div>
-                            <div className="bjnr_div">报警内容</div>
+                            <div className="bjnr_div">
+                                {
+                                    item.cellMap[192].indexOf("车间超员")!=-1?item.cellMap[191]+"于"+item.cellMap[194]+"超员":
+                                        item.cellMap[192].indexOf("车间缺员")!=-1?item.cellMap[191]+"于"+item.cellMap[194]+"缺员":
+                                            item.cellMap[192].indexOf("人员串岗")!=-1?item.cellMap[191]+item.cellMap[186]+"串岗":
+                                                item.cellMap[192].indexOf("人员滞留")!=-1?item.cellMap[191]+item.cellMap[186]+"滞留":
+                                                    item.cellMap[192].indexOf("人员一键紧急")!=-1?item.cellMap[191]+item.cellMap[186]+"紧急报警":
+                                                        item.cellMap[192].indexOf("人员长时间静止")!=-1?item.cellMap[191]+item.cellMap[186]+"长时间静止":
+                                                            item.cellMap[191]+item.cellMap[186]
+                                }
+                            </div>
                             <div className="bjsj_div">{item.cellMap[194]}</div>
                         </div>
                     ):<div>暂无数据</div>
