@@ -20,17 +20,13 @@ class TestHome extends Component{
 
     componentDidMount() {
         //this.request();
-        this.initNavListDiv();
         $("html").css("background-color","#154E6C");
-        let nldw=$("#nav_list_div").css("width");
-        nldw=nldw.substring(0,nldw.length-2);
-        $("#nav_list_div").css("height",nldw*1155/650+"px");
+        this.initNavListDiv();
     }
     initNavListDiv=()=>{
         let nldw=$("#nav_list_div").css("width");
-        //$("#nav_list_div").css("height",nldw);
-        let item_div_width=$(".nav_list_div .item_div").css("width");
-        //$(".nav_list_div .item_div").css("height",item_div_width);
+        nldw=nldw.substring(0,nldw.length-2);
+        $("#nav_list_div").css("height",nldw*1155/650+"px");
     }
     /*
     request = () => {
