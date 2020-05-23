@@ -3,10 +3,13 @@ import React, {Component} from 'react'
 import Super from "../../super"
 import "./index.less";
 import cjcyImg from "../../image/011.png";
+import rycgImg from "../../image/012.png";
+import ryyjjjImg from "../../image/013.png";
+import rycsjjzImg from "../../image/014.png";
 import $ from "jquery";
 
 class TestBjInfo extends Component{
-    state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[]}
+    state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[]}
 
     componentDidMount(){
         $("html").css("background-color","#fff");
@@ -56,6 +59,7 @@ class TestBjInfo extends Component{
             method:'GET',
         }).then((res) => {
             console.log("==="+JSON.stringify(res));
+            this.setState({bjList:res.entities});
         })
     }
     initSelect=(selectId,fieldId)=>{
@@ -86,7 +90,7 @@ class TestBjInfo extends Component{
     }
 
     render(){
-        const {bjqySelectList,bjlxSelectList}=this.state
+        const {bjqySelectList,bjlxSelectList,bjList}=this.state
         return <div className="bjInfoPage_div">
             <div className="top_div">报警信息</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
@@ -110,18 +114,29 @@ class TestBjInfo extends Component{
                 <button className="yjqr_but">一键确认</button>
             </div>
             <div className="bj_list_div">
+                {
+                    bjList?bjList.map((item,index)=>
+                        <div className="item_div">
+                            <img className="logo_img" src={
+                                item.cellMap[192].indexOf("车间超员")!=-1||item.cellMap[192].indexOf("车间缺员")!=-1 ? cjcyImg :
+                                    item.cellMap[192].indexOf("人员串岗")!=-1||item.cellMap[192].indexOf("人员滞留")!=-1?rycgImg:
+                                        item.cellMap[192].indexOf("人员一键紧急")!=-1?ryyjjjImg:
+                                            item.cellMap[192].indexOf("人员长时间静止")!=-1?rycsjjzImg:""
+                            }/>
+                            <div className="bjlx_div">{item.cellMap[192]}</div>
+                            <div className="bjnr_div">报警内容</div>
+                            <div className="bjsj_div">{item.cellMap[194]}</div>
+                        </div>
+                    ):<div>暂无数据</div>
+                }
+                {/*
                 <div className="item_div">
                     <img className="logo_img" src={cjcyImg}/>
                     <div className="bjlx_div">报警类型</div>
                     <div className="bjnr_div">报警内容</div>
                     <div className="bjsj_div">1997-07-01</div>
                 </div>
-                <div className="item_div">
-                    <img className="logo_img" src={cjcyImg}/>
-                    <div className="bjlx_div">报警类型</div>
-                    <div className="bjnr_div">报警内容</div>
-                    <div className="bjsj_div">1997-07-01</div>
-                </div>
+                */}
             </div>
         </div>;
     }
