@@ -10,7 +10,7 @@ import $ from "jquery";
 
 class TestBjInfo extends Component{
     state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[],
-    实体名称:186,围栏名称:191,报警类型:192,报警时间:194}
+    实体名称:186,处理状态:189,围栏名称:191,报警类型:192,报警时间:194,bjDetailTitle:"",bjDetailContent:""}
 
     componentDidMount(){
         $("html").css("background-color","#fff");
@@ -93,15 +93,34 @@ class TestBjInfo extends Component{
         else
             return ""
     }
+    showBjDetailDialogDiv(cellMap,code,show){
+        console.log(cellMap);
+        if(show==1){
+            this.setState({bjDetailTitle:cellMap[this.state.报警类型]});
+            this.setState({bjDetailContent:this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"滞留"+cellMap[this.state.处理状态]});
+            $("#bj_detail_dialog_div").css("display","block");
+        }
+        else{
+            $("#bj_detail_dialog_div").css("display","none");
+        }
+    }
+    deleteBjInfo = () => {
+
+    }
     goPage=(value)=>{
         this.props.history.push(`/${value}`);
     }
 
     render(){
-        const {bjqySelectList,bjlxSelectList,bjList,实体名称,围栏名称,报警类型,报警时间}=this.state
+        const {bjqySelectList,bjlxSelectList,bjList,实体名称,围栏名称,报警类型,报警时间,bjDetailTitle,bjDetailContent}=this.state
         return <div className="bjInfoPage_div">
-            <div className="bj_detail_dialog_div">
-                <div className="main_div"></div>
+            <div className="bj_detail_dialog_div" id="bj_detail_dialog_div">
+                <div className="main_div">
+                    <span className="close_span" onClick={this.showBjDetailDialogDiv.bind(this,null,null,0)}>X</span>
+                    <div className="title_div">{bjDetailTitle}</div>
+                    <div className="content_div">{bjDetailContent}</div>
+                    <div className="confirm_but_div" id="confirm_but_div" onClick={this.deleteBjInfo.bind(this)}>确认报警</div>
+                </div>
             </div>
             <div className="top_div">报警信息</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
@@ -127,7 +146,7 @@ class TestBjInfo extends Component{
             <div className="bj_list_div">
                 {
                     bjList?bjList.map((item,index)=>
-                        <div className="item_div">
+                        <div className="item_div" onClick={this.showBjDetailDialogDiv.bind(this,item.cellMap,item.code,1)}>
                             <img className="logo_img" src={
                                 item.cellMap[192].indexOf("车间超员")!=-1||item.cellMap[192].indexOf("车间缺员")!=-1 ? cjcyImg :
                                     item.cellMap[192].indexOf("人员串岗")!=-1||item.cellMap[192].indexOf("人员滞留")!=-1?rycgImg:
