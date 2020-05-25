@@ -7,10 +7,12 @@ import rycgImg from "../../image/012.png";
 import ryyjjjImg from "../../image/013.png";
 import rycsjjzImg from "../../image/014.png";
 import $ from "jquery";
+import {Toast} from "antd-mobile";
+import alert from "antd-mobile/lib/modal/alert";
 
 class TestBjInfo extends Component{
     state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[],
-    实体名称:186,处理状态:189,围栏名称:191,报警类型:192,报警时间:194,bjDetailTitle:"",bjDetailContent:""}
+    实体名称:186,处理状态:189,围栏名称:191,报警类型:192,报警时间:194,bjDetailTitle:"",bjDetailContent:"",bjDetailCode:""}
 
     componentDidMount(){
         $("html").css("background-color","#fff");
@@ -94,18 +96,47 @@ class TestBjInfo extends Component{
             return ""
     }
     showBjDetailDialogDiv(cellMap,code,show){
-        console.log(cellMap);
+        //console.log(cellMap);
         if(show==1){
+            this.bjDetailCode=code;
             this.setState({bjDetailTitle:cellMap[this.state.报警类型]});
             this.setState({bjDetailContent:this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"滞留"+cellMap[this.state.处理状态]});
             $("#bj_detail_dialog_div").css("display","block");
         }
         else{
+            this.bjDetailCode="";
+            this.setState({bjDetailTitle:""});
+            this.setState({bjDetailContent:""});
             $("#bj_detail_dialog_div").css("display","none");
         }
     }
-    deleteBjInfo = () => {
-
+    showDeleteAlert = () => {
+        //alert(this.bjDetailCode);
+        alert("删除操作","确认删除这条记录吗???",[{
+                text:"取消"
+            },
+            {
+                text:"确认",
+                onPress:()=>this.handelDelete(this.bjDetailCode)
+            }
+        ])
+    }
+    handelDelete=(code)=>{
+        Super.super({
+            url: `api2/entity/${this.state.menuId}/detail`,
+            method:'DELETE',
+            data: {
+                codes: code
+            }
+        }).then((res) => {
+            if(res.status === "suc") {
+                Toast.success("删除成功！") //刷新列表
+                this.showBjDetailDialogDiv(null,null,0);
+                this.initListByMenuId(true);
+            } else {
+                Toast.info('删除失败！')
+            }
+        })
     }
     goPage=(value)=>{
         this.props.history.push(`/${value}`);
@@ -119,7 +150,7 @@ class TestBjInfo extends Component{
                     <span className="close_span" onClick={this.showBjDetailDialogDiv.bind(this,null,null,0)}>X</span>
                     <div className="title_div">{bjDetailTitle}</div>
                     <div className="content_div">{bjDetailContent}</div>
-                    <div className="confirm_but_div" id="confirm_but_div" onClick={this.deleteBjInfo.bind(this)}>确认报警</div>
+                    <div className="confirm_but_div" id="confirm_but_div" onClick={this.showDeleteAlert.bind(this)}>确认报警</div>
                 </div>
             </div>
             <div className="top_div">报警信息</div>
