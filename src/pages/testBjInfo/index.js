@@ -9,7 +9,8 @@ import rycsjjzImg from "../../image/014.png";
 import $ from "jquery";
 
 class TestBjInfo extends Component{
-    state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[]}
+    state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[],
+    实体名称:186,围栏名称:191,报警类型:192,报警时间:194}
 
     componentDidMount(){
         $("html").css("background-color","#fff");
@@ -85,12 +86,19 @@ class TestBjInfo extends Component{
             this.setState({bjqySelectList:res.result.entities});
         })
     }
+    substringItemName(value){
+        if(value){
+            return value.split("@R@")[1];
+        }
+        else
+            return ""
+    }
     goPage=(value)=>{
         this.props.history.push(`/${value}`);
     }
 
     render(){
-        const {bjqySelectList,bjlxSelectList,bjList}=this.state
+        const {bjqySelectList,bjlxSelectList,bjList,实体名称,围栏名称,报警类型,报警时间}=this.state
         return <div className="bjInfoPage_div">
             <div className="bj_detail_dialog_div">
                 <div className="main_div"></div>
@@ -129,16 +137,16 @@ class TestBjInfo extends Component{
                             <div className="bjlx_div">{item.cellMap[192]}</div>
                             <div className="bjnr_div">
                                 {
-                                    item.cellMap[192].indexOf("车间超员")!=-1?item.cellMap[191]+"于"+item.cellMap[194]+"超员":
-                                        item.cellMap[192].indexOf("车间缺员")!=-1?item.cellMap[191]+"于"+item.cellMap[194]+"缺员":
-                                            item.cellMap[192].indexOf("人员串岗")!=-1?item.cellMap[191]+item.cellMap[186]+"串岗":
-                                                item.cellMap[192].indexOf("人员滞留")!=-1?item.cellMap[191]+item.cellMap[186]+"滞留":
-                                                    item.cellMap[192].indexOf("人员一键紧急")!=-1?item.cellMap[191]+item.cellMap[186]+"紧急报警":
-                                                        item.cellMap[192].indexOf("人员长时间静止")!=-1?item.cellMap[191]+item.cellMap[186]+"长时间静止":
-                                                            item.cellMap[191]+item.cellMap[186]
+                                    item.cellMap[报警类型].indexOf("车间超员")!=-1?this.substringItemName(item.cellMap[围栏名称])+"超员":
+                                        item.cellMap[报警类型].indexOf("车间缺员")!=-1?this.substringItemName(item.cellMap[围栏名称])+"缺员":
+                                            item.cellMap[报警类型].indexOf("人员串岗")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"串岗":
+                                                item.cellMap[报警类型].indexOf("人员滞留")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"滞留":
+                                                    item.cellMap[报警类型].indexOf("人员一键紧急")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"紧急报警":
+                                                        item.cellMap[报警类型].indexOf("人员长时间静止")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"长时间静止":
+                                                            item.cellMap[围栏名称]+item.cellMap[实体名称]
                                 }
                             </div>
-                            <div className="bjsj_div">{item.cellMap[194]}</div>
+                            <div className="bjsj_div">{item.cellMap[报警时间]}</div>
                         </div>
                     ):<div>暂无数据</div>
                 }
