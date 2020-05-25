@@ -98,13 +98,13 @@ class TestBjInfo extends Component{
     showBjDetailDialogDiv(cellMap,code,show){
         //console.log(cellMap);
         if(show==1){
-            this.bjDetailCode=code;
+            this.state.bjDetailCode=code;
             this.setState({bjDetailTitle:cellMap[this.state.报警类型]});
             this.setState({bjDetailContent:this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"滞留"+cellMap[this.state.处理状态]});
             $("#bj_detail_dialog_div").css("display","block");
         }
         else{
-            this.bjDetailCode="";
+            this.state.bjDetailCode="";
             this.setState({bjDetailTitle:""});
             this.setState({bjDetailContent:""});
             $("#bj_detail_dialog_div").css("display","none");
@@ -117,11 +117,12 @@ class TestBjInfo extends Component{
             },
             {
                 text:"确认",
-                onPress:()=>this.handelDelete(this.bjDetailCode)
+                onPress:()=>this.handelDelete(this.state.bjDetailCode)
             }
         ])
     }
     handelDelete=(code)=>{
+        //console.log("code==="+code);
         Super.super({
             url: `api2/entity/${this.state.menuId}/detail`,
             method:'DELETE',
@@ -137,6 +138,15 @@ class TestBjInfo extends Component{
                 Toast.info('删除失败！')
             }
         })
+    }
+    confirmAll=()=>{
+        let codes="";
+        this.state.bjList.map((item,index)=>{
+            codes+=","+item.code;
+        });
+        this.state.bjDetailCode=codes.substring(1);
+        console.log(this.state.bjDetailCode);
+        this.showDeleteAlert();
     }
     goPage=(value)=>{
         this.props.history.push(`/${value}`);
@@ -172,7 +182,7 @@ class TestBjInfo extends Component{
                         ):<option>暂无数据</option>
                     }
                 </select>
-                <button className="yjqr_but">一键确认</button>
+                <button className="yjqr_but" onClick={this.confirmAll.bind()}>一键确认</button>
             </div>
             <div className="bj_list_div">
                 {
