@@ -100,13 +100,33 @@ class TestBjInfo extends Component{
         if(show==1){
             this.state.bjDetailCode=code;
             this.setState({bjDetailTitle:cellMap[this.state.报警类型]});
-            this.setState({bjDetailContent:this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"滞留"+cellMap[this.state.处理状态]});
+            let content="";
+            if(cellMap[this.state.报警类型].indexOf("车间超员")!=-1)
+                content=this.substringItemName(cellMap[this.state.围栏名称])+"于"+cellMap[this.state.报警时间]+"超员"+cellMap[this.state.处理状态];
+            else if(cellMap[this.state.报警类型].indexOf("车间缺员")!=-1)
+                content=this.substringItemName(cellMap[this.state.围栏名称])+"于"+cellMap[this.state.报警时间]+"缺员"+cellMap[this.state.处理状态];
+            else if(cellMap[this.state.报警类型].indexOf("人员串岗")!=-1)
+                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"串岗"+cellMap[this.state.处理状态];
+            else if(cellMap[this.state.报警类型].indexOf("人员滞留")!=-1)
+                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"滞留"+cellMap[this.state.处理状态];
+            else if(cellMap[this.state.报警类型].indexOf("人员一键紧急")!=-1)
+                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"紧急报警"+cellMap[this.state.处理状态];
+            else if(cellMap[this.state.报警类型].indexOf("人员长时间静止")!=-1)
+                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"长时间静止"+cellMap[this.state.处理状态];
+            this.setState({bjDetailContent:content});
+
+            if(cellMap[this.state.报警类型].indexOf("车间超员")!=-1||cellMap[this.state.报警类型].indexOf("车间缺员")!=-1||
+                cellMap[this.state.报警类型].indexOf("人员串岗")!=-1||cellMap[this.state.报警类型].indexOf("人员滞留")!=-1)
+                $("#bj_detail_dialog_div #confirm_but_div").text("确认报警");
+            else
+                $("#bj_detail_dialog_div #confirm_but_div").text("报警已处理");
             $("#bj_detail_dialog_div").css("display","block");
         }
         else{
             this.state.bjDetailCode="";
             this.setState({bjDetailTitle:""});
             this.setState({bjDetailContent:""});
+            $("#bj_detail_dialog_div #confirm_but_div").text("");
             $("#bj_detail_dialog_div").css("display","none");
         }
     }
@@ -160,13 +180,13 @@ class TestBjInfo extends Component{
                     <span className="close_span" onClick={this.showBjDetailDialogDiv.bind(this,null,null,0)}>X</span>
                     <div className="title_div">{bjDetailTitle}</div>
                     <div className="content_div">{bjDetailContent}</div>
-                    <div className="confirm_but_div" id="confirm_but_div" onClick={this.showDeleteAlert.bind(this)}>确认报警</div>
+                    <div className="confirm_but_div" id="confirm_but_div" onClick={this.showDeleteAlert.bind(this)}></div>
                 </div>
             </div>
             <div className="top_div">报警信息</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
             <div className="where_search_div">
-                <select className="quyu_select" id="quyu_select">
+                <select className="quyu_select" id="quyu_select" onChange={this.initListByMenuId.bind(this,true)}>
                     <option value="">区域</option>
                     {
                         bjqySelectList?bjqySelectList.map((item,index)=>
@@ -189,10 +209,10 @@ class TestBjInfo extends Component{
                     bjList?bjList.map((item,index)=>
                         <div className="item_div" onClick={this.showBjDetailDialogDiv.bind(this,item.cellMap,item.code,1)}>
                             <img className="logo_img" src={
-                                item.cellMap[192].indexOf("车间超员")!=-1||item.cellMap[192].indexOf("车间缺员")!=-1 ? cjcyImg :
-                                    item.cellMap[192].indexOf("人员串岗")!=-1||item.cellMap[192].indexOf("人员滞留")!=-1?rycgImg:
-                                        item.cellMap[192].indexOf("人员一键紧急")!=-1?ryyjjjImg:
-                                            item.cellMap[192].indexOf("人员长时间静止")!=-1?rycsjjzImg:""
+                                item.cellMap[报警类型].indexOf("车间超员")!=-1||item.cellMap[报警类型].indexOf("车间缺员")!=-1 ? cjcyImg :
+                                    item.cellMap[报警类型].indexOf("人员串岗")!=-1||item.cellMap[报警类型].indexOf("人员滞留")!=-1?rycgImg:
+                                        item.cellMap[报警类型].indexOf("人员一键紧急")!=-1?ryyjjjImg:
+                                            item.cellMap[报警类型].indexOf("人员长时间静止")!=-1?rycsjjzImg:""
                             }/>
                             <div className="bjlx_div">{item.cellMap[192]}</div>
                             <div className="bjnr_div">
