@@ -4,6 +4,8 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "echarts": "^4.7.0",
+    "echarts-for-react": "^2.0.16",
     "jquery": "^3.5.1",
     "rc-form": "^2.4.11",
     "react": "^16.13.1",

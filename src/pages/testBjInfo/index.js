@@ -12,7 +12,7 @@ import alert from "antd-mobile/lib/modal/alert";
 
 class TestBjInfo extends Component{
     state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[],
-    实体名称:186,处理状态:189,围栏名称:191,报警类型:192,报警时间:194,bjDetailTitle:"",bjDetailContent:"",bjDetailCode:""}
+    实体名称:208,处理状态:209,围栏名称:204,报警类型:210,报警时间:206,bjDetailTitle:"",bjDetailContent:"",bjDetailCode:""}
 
     componentDidMount(){
         $("html").css("background-color","#fff");

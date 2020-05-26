@@ -110,7 +110,7 @@ class TestHome extends Component{
                         <img src={bjsjImg}/>
                         <div className="text_div">报警事件</div>
                     </div>
-                    <div className="item_div sjtj_div">
+                    <div className="item_div sjtj_div" onClick={this.goPage.bind(this,'testDataTj')}>
                         <img src={sjtjImg}/>
                         <div className="text_div">数据统计</div>
                     </div>

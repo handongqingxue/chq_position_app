@@ -4,6 +4,7 @@ import App from './App'
 import Test from './pages/test'
 import TestHome from './pages/testHome'
 import TestBjInfo from './pages/testBjInfo'
+import TestDataTj from './pages/testDataTj'
 import Login from './pages/login'
 import Home from './pages/home'
 import User from './pages/user'
@@ -22,6 +23,7 @@ export default class Router extends React.Component {
                                 <Route path='/test' component={Test}/>
                                 <Route path='/testHome' component={TestHome}/>
                                 <Route path='/testBjInfo' component={TestBjInfo}/>
+                                <Route path='/testDataTj' component={TestDataTj}/>
                                 <Route path='/home' component={Home} />
                                 <Route path='/user' component={User} />
                                 <Route path="/:menuId" component={ActTable} exact />
