@@ -3,10 +3,14 @@ import React, {Component} from 'react'
 import "./index.less";
 import $ from "jquery";
 import ReactEcharts from "echarts-for-react";
+import { DatePicker, List } from 'antd-mobile';
+import enUs from 'antd-mobile/lib/date-picker/locale/en_US';
 import Super from "../../super";
+import * as moment from "moment";
+import Text from "antd-mobile/es/text";
 
 class TestDataTj extends Component{
-    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month"}
+    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month"}
 
     componentDidMount() {
         $("html").css("background-color","#fff");
@@ -27,7 +31,7 @@ class TestDataTj extends Component{
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{disabledColIds:disabledColIds,criteria_13:"2019-05-20~2020-06-20"}
+            query:{disabledColIds:disabledColIds,criteria_13:this.state.startDate+"~"+this.state.endDate}
         }).then((res) => {
             console.log(res);
             if(!reload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
@@ -128,6 +132,19 @@ class TestDataTj extends Component{
         }
         return option;
     }
+    setDPDate=(flag,value)=>{
+        if(flag=="start")
+            this.state.startDate=moment(value).format('YYYY-MM-DD HH:mm:ss');
+        else if(flag=="end")
+            this.state.endDate=moment(value).format('YYYY-MM-DD HH:mm:ss');
+    }
+    getShowDate=(value)=>{
+        let dateValue = moment(value).format("YYYY-MM");
+        let tem = (
+            <Text style={{fontSize:18}}>{dateValue}</Text>
+        )
+        return tem;
+    }
     goPage=(value)=>{
         this.props.history.push(`/${value}`);
     }
@@ -141,6 +158,24 @@ class TestDataTj extends Component{
                 <button onClick={(e)=>this.initListByMenuId(日查询常量,true)}>日</button>
                 <button onClick={(e)=>this.initListByMenuId(周查询常量,true)}>周</button>
                 <button onClick={(e)=>this.initListByMenuId(月查询常量,true)}>月</button>
+                <DatePicker
+                    mode="date"
+                    title="开始时间"
+                    extra="开始时间"
+                    value={this.state.date}
+                    onChange={date => this.setDPDate('start',date)}
+                >
+                    <List.Item arrow="horizontal">2019-01-01</List.Item>
+                </DatePicker>
+                <DatePicker
+                    mode="date"
+                    title="结束时间"
+                    extra="结束时间"
+                    value={this.state.date}
+                    onChange={date=>this.setDPDate('end',date)}
+                >
+                    <List.Item arrow="horizontal">2021-01-01</List.Item>
+                </DatePicker>
             </div>
             <ReactEcharts id="echart" option={this.getOption()}/>
         </div>;
