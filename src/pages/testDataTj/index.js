@@ -395,10 +395,16 @@ class TestDataTj extends Component{
     initTodayBjCount=(res)=>{
         let todayDate=this.getTodayDate();
         let todayBjCountList=this.state.todayBjCountList;
+        if(this.state.barReload){
+            for(let key in todayBjCountList){
+                todayBjCountList[key]=0;
+            }
+        }
+
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
+            //console.log("todayDate==="+todayDate+","+cellMap[this.state.columnsId[this.state.日期字段]])
             if(todayDate==cellMap[this.state.columnsId[this.state.日期字段]]){
-                console.log("todayDate==="+todayDate+","+cellMap[this.state.columnsId[this.state.日期字段]])
                 let 数据库报警类型=this.state.报警类型数据库里名称;
                 let 手机端报警类型=this.state.报警类型手机端显示名称;
                 let 数报警类型=cellMap[this.state.columnsId[this.state.报警类型字段]];
@@ -414,7 +420,6 @@ class TestDataTj extends Component{
                 todayBjCountList[手报警类型]+=parseInt(cellMap[this.state.columnsId[this.state.数量字段]]);
             }
         });
-        console.log(todayBjCountList)
         this.setState({todayBjCountList:todayBjCountList});
     }
     getTodayDate=()=>{
@@ -635,7 +640,17 @@ class TestDataTj extends Component{
                     radius: '65%',
                     center: ['50%', '50%'],
                     label: {
-                        position: 'inner'
+                        position: 'inner',
+                        formatter:
+                            this.state.bjqyList.length<=4
+                            ?
+                            function(json){
+                                return ""
+                            }
+                            :
+                            function(json){
+                                return json["data"]["name"]
+                            }
                     },
                     //roseType : 'area',
                     selectedMode: 'single',
