@@ -6,20 +6,28 @@ import ReactEcharts from "echarts-for-react";
 import Super from "../../super";
 
 class TestDataTj extends Component{
-    state={menuId:17,legendData:[],xAxisData:[],series:[],日期:68,年:74,月:72,月度周:69,日:71,报警类型:73,数量:75}
+    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month"}
 
     componentDidMount() {
         $("html").css("background-color","#fff");
         this.request();
     }
     request=()=>{
-        this.initListByMenuId(false);
+        this.initListByMenuId(this.state.日查询常量,false);
     }
-    initListByMenuId=(reload)=>{
+    initListByMenuId=(flag,reload)=>{
+        this.state.searchFlag=flag;
+        let disabledColIds="";
+        if(this.state.searchFlag==this.state.日查询常量)
+            disabledColIds="";
+        else if(this.state.searchFlag==this.state.周查询常量)
+            disabledColIds=this.state.日;
+        else if(this.state.searchFlag==this.state.月查询常量)
+            disabledColIds=this.state.日+","+this.state.月度周;
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{disabledColIds:"",criteria_13:"2019-05-20~2020-06-20"}
+            query:{disabledColIds:disabledColIds,criteria_13:"2019-05-20~2020-06-20"}
         }).then((res) => {
             console.log(res);
             if(!reload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
@@ -63,7 +71,12 @@ class TestDataTj extends Component{
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
             //console.log(cellMap);
-            xAxisData.push(cellMap[this.state.日期]);
+            if(this.state.searchFlag==this.state.日查询常量)
+                xAxisData.push(cellMap[this.state.日期]);
+            else if(this.state.searchFlag==this.state.周查询常量)
+                xAxisData.push(cellMap[this.state.年]+"年"+cellMap[this.state.月]+"月"+cellMap[this.state.月度周]);
+            else if(this.state.searchFlag==this.state.月查询常量)
+                xAxisData.push(cellMap[this.state.年]+"年"+cellMap[this.state.月]+"月");
             this.state.series.map((sItem,sIndex)=>{
                 if(cellMap[this.state.报警类型]==sItem.name){
                     sItem.data.push(cellMap[this.state.数量]);
@@ -120,15 +133,16 @@ class TestDataTj extends Component{
     }
 
     render() {
+        const {日查询常量,周查询常量,月查询常量}=this.state
         return <div className="bjInfoPage_div">
             <div className="top_div">报警统计</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
             <div>
-                <button>日</button>
-                <button>周</button>
-                <button>月</button>
+                <button onClick={(e)=>this.initListByMenuId(日查询常量,true)}>日</button>
+                <button onClick={(e)=>this.initListByMenuId(周查询常量,true)}>周</button>
+                <button onClick={(e)=>this.initListByMenuId(月查询常量,true)}>月</button>
             </div>
-            <ReactEcharts option={this.getOption()}/>
+            <ReactEcharts id="echart" option={this.getOption()}/>
         </div>;
     }
 }
