@@ -10,7 +10,9 @@ import * as moment from "moment";
 import Text from "antd-mobile/es/text";
 
 class TestDataTj extends Component{
-    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month"}
+    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month",
+        报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
+        报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"}}
 
     componentDidMount() {
         $("html").css("background-color","#F5F5F5");
@@ -62,30 +64,59 @@ class TestDataTj extends Component{
             console.log(res.optionsMap[fieldId]);
             let ldMap=[];
             let series=[];
+            let ldValueJj=null;
+            let ldValueQc=null;
+            let ldValueZc=null;
+            let ldValueJz=null;
             res.optionsMap[fieldId].map((item,index)=>{
-                ldMap.push(item.title);
+                let 数据库里报警类型=this.state.报警类型数据库里名称;
+                let 手机端报警类型=this.state.报警类型手机端显示名称;
                 let color;
-                switch (index) {
-                    case 0:
-                        color="#F4552D";
+                switch (item.title) {
+                    case 数据库里报警类型.紧急报警:
+                        if(ldValueJj==null){
+                            ldValueJj=手机端报警类型.紧急报警;
+                            color="#F4552D";
+                            series.push({name:ldValueJj,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueJj);
+                        }
                         break;
-                    case 1:
-                        color="#FEA995";
+                    case 数据库里报警类型.缺员报警:
+                    case 数据库里报警类型.超员报警:
+                        if(ldValueQc==null){
+                            ldValueQc=手机端报警类型.缺员超员报警;
+                            //console.log(手机端报警类型.缺员超员报警)
+                            color="#FEA995";
+                            series.push({name:ldValueQc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueQc);
+                        }
                         break;
-                    case 2:
-                        color="#1BAB3C";
+                    case 数据库里报警类型.滞留报警:
+                    case 数据库里报警类型.串岗报警:
+                        if(ldValueZc==null){
+                            ldValueZc=手机端报警类型.串岗滞留报警;
+                            color="#1BAB3C";
+                            series.push({name:ldValueZc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueZc);
+                        }
                         break;
-                    case 3:
-                        color="#88D9A1";
+                    case 数据库里报警类型.静止报警:
+                        if(ldValueJz==null){
+                            ldValueJz=手机端报警类型.静止报警;
+                            color="#88D9A1";
+                            series.push({name:ldValueJz,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueJz);
+                        }
                         break;
+                        /*
                     case 4:
                         color="#2191DB";
                         break;
                     case 5:
                         color="#9D9D9D";
                         break;
+                         */
                 }
-                series.push({name:item.title,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
             });
             this.setState({legendData:ldMap});
             this.setState({series:series});
@@ -102,11 +133,25 @@ class TestDataTj extends Component{
                 xAxisData.push(cellMap[this.state.年]+"年"+cellMap[this.state.月]+"月"+cellMap[this.state.月度周]);
             else if(this.state.searchFlag==this.state.月查询常量)
                 xAxisData.push(cellMap[this.state.年]+"年"+cellMap[this.state.月]+"月");
+            let 数据库报警类型=this.state.报警类型数据库里名称;
+            let 手机端报警类型=this.state.报警类型手机端显示名称;
             this.state.series.map((sItem,sIndex)=>{
-                    if(cellMap[this.state.报警类型]==sItem.name){
-                        //console.log("报警时间==="+cellMap[this.state.日期])
-                        sItem.data.push(cellMap[this.state.数量]);
-                    }
+                let 数报警类型=cellMap[this.state.报警类型];
+                let 手报警类型;
+                if(数据库报警类型.紧急报警==数报警类型)
+                    手报警类型=手机端报警类型.紧急报警;
+                else if(数据库报警类型.超员报警==数报警类型||数据库报警类型.缺员报警==数报警类型)
+                    手报警类型=手机端报警类型.缺员超员报警;
+                else if(数据库报警类型.串岗报警==数报警类型||数据库报警类型.滞留报警==数报警类型)
+                    手报警类型=手机端报警类型.串岗滞留报警;
+                else if(数据库报警类型.静止报警==数报警类型)
+                    手报警类型=手机端报警类型.静止报警;
+
+                if(手报警类型==sItem.name){
+                    //console.log("报警时间==="+cellMap[this.state.日期])
+                    console.log("报警时间==="+cellMap[this.state.日期]+",手报警类型==="+sItem.name+",数量==="+cellMap[this.state.数量])
+                    sItem.data.push(cellMap[this.state.数量]);
+                }
             });
         });
         console.log("series==="+JSON.stringify(this.state.series));
@@ -123,6 +168,7 @@ class TestDataTj extends Component{
             legend:{
                 itemWidth:10,
                 itemHeight:10,
+                x:'50px',
                 y: '5px',
                 data:this.state.legendData
             },
@@ -137,7 +183,8 @@ class TestDataTj extends Component{
                  */
             },
             yAxis:{
-                type:'value'
+                type:'value',
+                minInterval: 1
             },
             series:this.state.series
                 /*
@@ -183,7 +230,7 @@ class TestDataTj extends Component{
             <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
             <div>
                 <div className="jrbjtjsl_div">
-                    <div className="jrbjsl_tit_div">今日报警数量</div>
+                    <div className="jrbjsl_tit_div">今日报警</div>
                     <div className="count_list_div">
                         <div className="item_div">
                             <span className="text_span">人员长时间静止报警</span>
