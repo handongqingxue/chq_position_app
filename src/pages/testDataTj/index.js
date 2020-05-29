@@ -126,6 +126,21 @@ class TestDataTj extends Component{
         let xAxisData=[];
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
+            console.log("cellMap==="+JSON.stringify(cellMap));
+            if(this.state.searchFlag==this.state.日查询常量){
+                if(!this.checkXAxisDataExist(xAxisData,cellMap[this.state.月]+"-"+cellMap[this.state.日]))
+                    xAxisData.push(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
+            }
+            else if(this.state.searchFlag==this.state.周查询常量){
+                let fxd=this.formatterXAxisData(cellMap,this.state.searchFlag)
+                if(!this.checkXAxisDataExist(xAxisData,fxd))
+                    xAxisData.push(fxd);
+            }
+        });
+        console.log(xAxisData)
+        /*
+        res.entities.map((item,index)=>{
+            let cellMap=item.cellMap;
             //console.log("cellMap==="+JSON.stringify(cellMap));
             if(this.state.searchFlag==this.state.日查询常量)
                 xAxisData.push(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
@@ -154,8 +169,50 @@ class TestDataTj extends Component{
                 }
             });
         });
+         */
         console.log("series==="+JSON.stringify(this.state.series));
         this.setState({xAxisData:xAxisData});
+    }
+    checkXAxisDataExist=(xAxisData,xData)=>{
+        let exist=false;
+        xAxisData.map((item,index)=>{
+            if(item==xData){
+                exist=true;
+                return exist;
+            }
+        });
+        return exist;
+    }
+    formatterXAxisData=(cellMap,searchFlag)=>{
+        let label;
+        if(searchFlag==this.state.周查询常量){
+            let date=cellMap[this.state.日期];
+            let day=date.substring(8);
+            if(day>=1&day<=7)
+                label=cellMap[this.state.月]+".1-"+cellMap[this.state.月]+".7";
+            else if(day>=8&day<=14)
+                label=cellMap[this.state.月]+".8-"+cellMap[this.state.月]+".14";
+            else if(day>=15&day<=21)
+                label=cellMap[this.state.月]+".15-"+cellMap[this.state.月]+".21";
+            else if(day>=22&day<=31){
+                let month=date.substring(5,7);
+                let lastDay;
+                if(month==1||month==3||month==5||month==7||month==8||month==10||month==12)
+                    lastDay=31;
+                else if(month==2){
+                    let year=date.substring(0,4);
+                    if(year%4==0)
+                        lastDay=29;
+                    else
+                        lastDay=28;
+                }
+                else
+                    lastDay=30;
+                label=cellMap[this.state.月]+".22-"+cellMap[this.state.月]+"."+lastDay;
+            }
+        }
+        //console.log("label==="+label)
+        return label;
     }
     getOption =()=> {
         let option = {
@@ -174,11 +231,13 @@ class TestDataTj extends Component{
             },
             xAxis:{
                 //data:['周一','周二','周三','周四','周五','周六','周日']
-                data:this.state.xAxisData
+                data:this.state.xAxisData,
+                axisTick:{alignWithLabel:true}
                 /*
+                ,
                 axisLabel: {
                     interval:0,
-                    rotate:90
+                    rotate:45
                 }
                  */
             },
