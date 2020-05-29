@@ -12,7 +12,8 @@ import Text from "antd-mobile/es/text";
 class TestDataTj extends Component{
     state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month",
         报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
-        报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"}}
+        报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"},
+        alignWithLabel:false,X轴字号:""}
 
     componentDidMount() {
         $("html").css("background-color","#F5F5F5");
@@ -24,12 +25,32 @@ class TestDataTj extends Component{
     initListByMenuId=(flag,reload)=>{
         this.state.searchFlag=flag;
         let disabledColIds="";
-        if(this.state.searchFlag==this.state.日查询常量)
+        $("#but_div div").css("color","#000");
+        $("#but_div div").css("border-bottom","#fff solid 3px");
+        if(this.state.searchFlag==this.state.日查询常量){
+            $("#but_div #date_but_div").css("color","#477A8F");
+            $("#but_div #date_but_div").css("border-bottom","#497DD0 solid 3px");
+
             disabledColIds="";
-        else if(this.state.searchFlag==this.state.周查询常量)
+            this.state.X轴字号=12;
+            this.state.alignWithLabel=true;
+        }
+        else if(this.state.searchFlag==this.state.周查询常量){
+            $("#but_div #week_but_div").css("color","#477A8F");
+            $("#but_div #week_but_div").css("border-bottom","#497DD0 solid 3px");
+
             disabledColIds=this.state.日;
-        else if(this.state.searchFlag==this.state.月查询常量)
+            this.state.X轴字号=10;
+            this.state.alignWithLabel=false;
+        }
+        else if(this.state.searchFlag==this.state.月查询常量){
+            $("#but_div #year_but_div").css("color","#477A8F");
+            $("#but_div #year_but_div").css("border-bottom","#497DD0 solid 3px");
+
             disabledColIds=this.state.日+","+this.state.月度周;
+            this.state.X轴字号=10;
+            this.state.alignWithLabel=true;
+        }
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
@@ -136,6 +157,10 @@ class TestDataTj extends Component{
                 if(!this.checkXAxisDataExist(xAxisData,fxd))
                     xAxisData.push(fxd);
             }
+            else if(this.state.searchFlag==this.state.月查询常量){
+                if(!this.checkXAxisDataExist(xAxisData,cellMap[this.state.月]))
+                    xAxisData.push(cellMap[this.state.月]);
+            }
         });
         console.log(xAxisData)
         /*
@@ -232,14 +257,12 @@ class TestDataTj extends Component{
             xAxis:{
                 //data:['周一','周二','周三','周四','周五','周六','周日']
                 data:this.state.xAxisData,
-                axisTick:{alignWithLabel:true}
-                /*
-                ,
+                axisTick:{alignWithLabel:this.state.alignWithLabel},
                 axisLabel: {
-                    interval:0,
-                    rotate:45
+                    fontSize:this.state.X轴字号,
+                    interval:0
+                    //rotate:45
                 }
-                 */
             },
             yAxis:{
                 type:'value',
@@ -310,10 +333,10 @@ class TestDataTj extends Component{
                     </div>
                 </div>
                 <div className="search_type_div">
-                    <div className="but_div">
-                        <div className="date_but_div" onClick={(e)=>this.initListByMenuId(日查询常量,true)}>日</div>
-                        <div className="week_but_div" onClick={(e)=>this.initListByMenuId(周查询常量,true)}>周</div>
-                        <div className="month_but_div" onClick={(e)=>this.initListByMenuId(月查询常量,true)}>月</div>
+                    <div className="but_div" id="but_div">
+                        <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initListByMenuId(日查询常量,true)}>日</div>
+                        <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initListByMenuId(周查询常量,true)}>周</div>
+                        <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initListByMenuId(月查询常量,true)}>月</div>
                     </div>
                 </div>
                 {/*<DatePicker*/}
