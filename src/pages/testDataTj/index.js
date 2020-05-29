@@ -13,7 +13,7 @@ class TestDataTj extends Component{
     state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month",
         报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
         报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"},
-        alignWithLabel:false,X轴字号:""}
+        alignWithLabel:false,X轴字号:"",seriesNameList:[],seriesDataList:[],seriesColorList:[]}
 
     componentDidMount() {
         $("html").css("background-color","#F5F5F5");
@@ -74,6 +74,8 @@ class TestDataTj extends Component{
         }).then((res) => {
             console.log("==="+JSON.stringify(res));
             this.initXAxisData(res);
+            this.initSeriesDataList();
+            this.initYAxisData(res);
         })
     }
     initlegendData=(fieldId)=>{
@@ -89,6 +91,9 @@ class TestDataTj extends Component{
             let ldValueQc=null;
             let ldValueZc=null;
             let ldValueJz=null;
+            let seriesNameList=this.state.seriesNameList;
+            let seriesDataList=this.state.seriesDataList;
+            let seriesColorList=this.state.seriesColorList;
             res.optionsMap[fieldId].map((item,index)=>{
                 let 数据库里报警类型=this.state.报警类型数据库里名称;
                 let 手机端报警类型=this.state.报警类型手机端显示名称;
@@ -98,7 +103,10 @@ class TestDataTj extends Component{
                         if(ldValueJj==null){
                             ldValueJj=手机端报警类型.紧急报警;
                             color="#F4552D";
-                            series.push({name:ldValueJj,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            seriesNameList.push(ldValueJj);
+                            seriesDataList[ldValueJj]=[];
+                            seriesColorList[ldValueJj]=color;
+                            //series.push({name:ldValueJj,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueJj);
                         }
                         break;
@@ -108,7 +116,10 @@ class TestDataTj extends Component{
                             ldValueQc=手机端报警类型.缺员超员报警;
                             //console.log(手机端报警类型.缺员超员报警)
                             color="#FEA995";
-                            series.push({name:ldValueQc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            seriesNameList.push(ldValueQc);
+                            seriesDataList[ldValueQc]=[];
+                            seriesColorList[ldValueQc]=color;
+                            //series.push({name:ldValueQc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueQc);
                         }
                         break;
@@ -117,7 +128,10 @@ class TestDataTj extends Component{
                         if(ldValueZc==null){
                             ldValueZc=手机端报警类型.串岗滞留报警;
                             color="#1BAB3C";
-                            series.push({name:ldValueZc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            seriesNameList.push(ldValueZc);
+                            seriesDataList[ldValueZc]=[];
+                            seriesColorList[ldValueZc]=color;
+                            //series.push({name:ldValueZc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueZc);
                         }
                         break;
@@ -125,7 +139,10 @@ class TestDataTj extends Component{
                         if(ldValueJz==null){
                             ldValueJz=手机端报警类型.静止报警;
                             color="#88D9A1";
-                            series.push({name:ldValueJz,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            seriesNameList.push(ldValueJz);
+                            seriesDataList[ldValueJz]=[];
+                            seriesColorList[ldValueJz]=color;
+                            //series.push({name:ldValueJz,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueJz);
                         }
                         break;
@@ -140,7 +157,7 @@ class TestDataTj extends Component{
                 }
             });
             this.setState({legendData:ldMap});
-            this.setState({series:series});
+            //this.setState({series:series});
         })
     }
     initXAxisData=(res)=>{
@@ -149,8 +166,9 @@ class TestDataTj extends Component{
             let cellMap=item.cellMap;
             console.log("cellMap==="+JSON.stringify(cellMap));
             if(this.state.searchFlag==this.state.日查询常量){
-                if(!this.checkXAxisDataExist(xAxisData,cellMap[this.state.月]+"-"+cellMap[this.state.日]))
+                if(!this.checkXAxisDataExist(xAxisData,cellMap[this.state.月]+"-"+cellMap[this.state.日])){
                     xAxisData.push(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
+                }
             }
             else if(this.state.searchFlag==this.state.周查询常量){
                 let fxd=this.formatterXAxisData(cellMap,this.state.searchFlag)
@@ -162,7 +180,6 @@ class TestDataTj extends Component{
                     xAxisData.push(cellMap[this.state.月]);
             }
         });
-        console.log(xAxisData)
         /*
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
@@ -197,6 +214,52 @@ class TestDataTj extends Component{
          */
         console.log("series==="+JSON.stringify(this.state.series));
         this.setState({xAxisData:xAxisData});
+    }
+    initYAxisData=(res)=>{
+        let series=[];
+        let seriesData;
+        res.entities.map((item,index)=>{
+            let cellMap=item.cellMap;
+            let 数据库报警类型=this.state.报警类型数据库里名称;
+            let 手机端报警类型=this.state.报警类型手机端显示名称;
+            let 数报警类型=cellMap[this.state.报警类型];
+            let 手报警类型;
+            if(数据库报警类型.紧急报警==数报警类型)
+                手报警类型=手机端报警类型.紧急报警;
+            else if(数据库报警类型.超员报警==数报警类型||数据库报警类型.缺员报警==数报警类型)
+                手报警类型=手机端报警类型.缺员超员报警;
+            else if(数据库报警类型.串岗报警==数报警类型||数据库报警类型.滞留报警==数报警类型)
+                手报警类型=手机端报警类型.串岗滞留报警;
+            else if(数据库报警类型.静止报警==数报警类型)
+                手报警类型=手机端报警类型.静止报警;
+
+            if(this.state.searchFlag==this.state.日查询常量){
+                //console.log(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
+                this.state.seriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                    if(sdItem.xLabel==cellMap[this.state.月]+"-"+cellMap[this.state.日]){
+                        sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.数量]);
+                    }
+                });
+            }
+            console.log(手报警类型+":"+JSON.stringify(this.state.seriesDataList[手报警类型]))
+        });
+
+        this.state.legendData.map((item,index)=>{
+            let data=[];
+            this.state.seriesDataList[item].map((sdItem,sdIndex)=>{
+                data.push(sdItem.yLabel);
+            });
+            series.push({name:item,type:'bar',data:data,barGap:0,itemStyle:{normal:{color:this.state.seriesColorList[item]}}});
+        });
+        this.setState({series:series});
+    }
+    initSeriesDataList=()=>{
+        this.state.xAxisData.map((xItem)=>{
+            this.state.legendData.map((legItem,index)=>{
+                this.state.seriesDataList[legItem].push({"xLabel":xItem,"yLabel":0});
+            });
+        });
+        console.log("---"+JSON.stringify(this.state.seriesDataList[this.state.报警类型手机端显示名称.紧急报警]))
     }
     checkXAxisDataExist=(xAxisData,xData)=>{
         let exist=false;
