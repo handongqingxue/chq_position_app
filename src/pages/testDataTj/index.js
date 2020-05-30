@@ -11,19 +11,27 @@ import * as moment from "moment";
 import Text from "antd-mobile/es/text";
 
 class TestDataTj extends Component{
-    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",日期:68,月度周:69,日:71,月:72,报警类型:73,年:74,数量:75,日查询常量:"date",周查询常量:"week",月查询常量:"month",
+    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",
+        日期:96157841629187,
+        月度周:96157841629190,
+        日:96157841629191,
+        月:96157841629189,
+        报警类型:96157841629192,
+        年:96157841629188,
+        数量:96157841629193,
+        日查询常量:"date",周查询常量:"week",月查询常量:"month",
         报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
         报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"},
-        alignWithLabel:false,X轴字号:"",seriesNameList:[],seriesDataList:[],seriesColorList:[]}
+        alignWithLabel:false,X轴字号:"",barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],todayBjCountList:[]}
 
     componentDidMount() {
         $("html").css("background-color","#F5F5F5");
         this.request();
     }
     request=()=>{
-        this.initListByMenuId(this.state.日查询常量,false);
+        this.initBarListByMenuId(this.state.日查询常量,false);
     }
-    initListByMenuId=(flag,reload)=>{
+    initBarListByMenuId=(flag,reload)=>{
         this.state.searchFlag=flag;
         let disabledColIds="";
         $("#but_div div").css("color","#000");
@@ -61,24 +69,26 @@ class TestDataTj extends Component{
             if(!reload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
                 res.ltmpl.criterias.map((item,index)=>{
                     if(item.id==6){
-                        this.initlegendData(item.fieldId);
+                        this.initBarlegendData(item.fieldId);
                     }
                 });
             }
-            this.initListByQueryKey(res.queryKey);
+            this.initBarListByQueryKey(res.queryKey,reload);
         })
     }
-    initListByQueryKey=(queryKey)=>{
+    initBarListByQueryKey=(queryKey,reload)=>{
         Super.super({
             url:`api2/entity/list/${queryKey}/data`,
             method:'GET',
         }).then((res) => {
-            this.initXAxisData(res);
-            this.initSeriesDataList();
+            this.initBarXAxisData(res);
+            this.initBarSeriesDataList();
             this.initYAxisData(res);
+            if(!reload)
+                this.initTodayBjCount(res);
         })
     }
-    initlegendData=(fieldId)=>{
+    initBarlegendData=(fieldId)=>{
         Super.super({
             url:`api2/meta/dict/field_options`,
             method:'GET',
@@ -91,9 +101,10 @@ class TestDataTj extends Component{
             let ldValueQc=null;
             let ldValueZc=null;
             let ldValueJz=null;
-            let seriesNameList=this.state.seriesNameList;
-            let seriesDataList=this.state.seriesDataList;
-            let seriesColorList=this.state.seriesColorList;
+            let todayBjCountList=this.state.todayBjCountList;
+            let barSeriesNameList=this.state.barSeriesNameList;
+            let barSeriesDataList=this.state.barSeriesDataList;
+            let barSeriesColorList=this.state.barSeriesColorList;
             res.optionsMap[fieldId].map((item,index)=>{
                 let 数据库里报警类型=this.state.报警类型数据库里名称;
                 let 手机端报警类型=this.state.报警类型手机端显示名称;
@@ -102,10 +113,12 @@ class TestDataTj extends Component{
                     case 数据库里报警类型.紧急报警:
                         if(ldValueJj==null){
                             ldValueJj=手机端报警类型.紧急报警;
-                            color="#F4552D";
-                            seriesNameList.push(ldValueJj);
-                            seriesDataList[ldValueJj]=[];
-                            seriesColorList[ldValueJj]=color;
+                            todayBjCountList[ldValueJj]=0;
+
+                            color="#F00";
+                            barSeriesNameList.push(ldValueJj);
+                            barSeriesDataList[ldValueJj]=[];
+                            barSeriesColorList[ldValueJj]=color;
                             //series.push({name:ldValueJj,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueJj);
                         }
@@ -114,11 +127,13 @@ class TestDataTj extends Component{
                     case 数据库里报警类型.超员报警:
                         if(ldValueQc==null){
                             ldValueQc=手机端报警类型.缺员超员报警;
+                            todayBjCountList[ldValueQc]=0;
+
                             //console.log(手机端报警类型.缺员超员报警)
-                            color="#FEA995";
-                            seriesNameList.push(ldValueQc);
-                            seriesDataList[ldValueQc]=[];
-                            seriesColorList[ldValueQc]=color;
+                            color="#0F0";
+                            barSeriesNameList.push(ldValueQc);
+                            barSeriesDataList[ldValueQc]=[];
+                            barSeriesColorList[ldValueQc]=color;
                             //series.push({name:ldValueQc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueQc);
                         }
@@ -127,10 +142,12 @@ class TestDataTj extends Component{
                     case 数据库里报警类型.串岗报警:
                         if(ldValueZc==null){
                             ldValueZc=手机端报警类型.串岗滞留报警;
-                            color="#1BAB3C";
-                            seriesNameList.push(ldValueZc);
-                            seriesDataList[ldValueZc]=[];
-                            seriesColorList[ldValueZc]=color;
+                            todayBjCountList[ldValueZc]=0;
+
+                            color="#00F";
+                            barSeriesNameList.push(ldValueZc);
+                            barSeriesDataList[ldValueZc]=[];
+                            barSeriesColorList[ldValueZc]=color;
                             //series.push({name:ldValueZc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueZc);
                         }
@@ -138,10 +155,12 @@ class TestDataTj extends Component{
                     case 数据库里报警类型.静止报警:
                         if(ldValueJz==null){
                             ldValueJz=手机端报警类型.静止报警;
-                            color="#88D9A1";
-                            seriesNameList.push(ldValueJz);
-                            seriesDataList[ldValueJz]=[];
-                            seriesColorList[ldValueJz]=color;
+                            todayBjCountList[ldValueJz]=0;
+
+                            color="#2f2f4f";
+                            barSeriesNameList.push(ldValueJz);
+                            barSeriesDataList[ldValueJz]=[];
+                            barSeriesColorList[ldValueJz]=color;
                             //series.push({name:ldValueJz,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
                             ldMap.push(ldValueJz);
                         }
@@ -160,23 +179,23 @@ class TestDataTj extends Component{
             //this.setState({series:series});
         })
     }
-    initXAxisData=(res)=>{
+    initBarXAxisData=(res)=>{
         let xAxisData=[];
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
             //console.log("cellMap==="+JSON.stringify(cellMap));
             if(this.state.searchFlag==this.state.日查询常量){
-                if(!this.checkXAxisDataExist(xAxisData,cellMap[this.state.月]+"-"+cellMap[this.state.日])){
+                if(!this.checkBarXAxisDataExist(xAxisData,cellMap[this.state.月]+"-"+cellMap[this.state.日])){
                     xAxisData.push(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
                 }
             }
             else if(this.state.searchFlag==this.state.周查询常量){
                 let fxd=this.formatterXAxisData(cellMap,this.state.searchFlag)
-                if(!this.checkXAxisDataExist(xAxisData,fxd))
+                if(!this.checkBarXAxisDataExist(xAxisData,fxd))
                     xAxisData.push(fxd);
             }
             else if(this.state.searchFlag==this.state.月查询常量){
-                if(!this.checkXAxisDataExist(xAxisData,cellMap[this.state.月]))
+                if(!this.checkBarXAxisDataExist(xAxisData,cellMap[this.state.月]))
                     xAxisData.push(cellMap[this.state.月]);
             }
         });
@@ -236,14 +255,14 @@ class TestDataTj extends Component{
 
             if(this.state.searchFlag==this.state.日查询常量){
                 //console.log(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
-                this.state.seriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                this.state.barSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
                     if(sdItem.xLabel==cellMap[this.state.月]+"-"+cellMap[this.state.日]){
                         sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.数量]);
                     }
                 });
             }
             else if(this.state.searchFlag==this.state.周查询常量){
-                this.state.seriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                this.state.barSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
                     if(sdItem.xLabel==this.formatterXAxisData(cellMap,this.state.周查询常量)){
                         //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
                         sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.数量]);
@@ -251,40 +270,69 @@ class TestDataTj extends Component{
                 });
             }
             else if(this.state.searchFlag==this.state.月查询常量){
-                this.state.seriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                this.state.barSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
                     if(sdItem.xLabel==cellMap[this.state.月]){
                         //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
                         sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.数量]);
                     }
                 });
             }
-            console.log(手报警类型+":"+JSON.stringify(this.state.seriesDataList[手报警类型]))//经测试没问题
+            console.log(手报警类型+":"+JSON.stringify(this.state.barSeriesDataList[手报警类型]))//经测试没问题
         });
 
         this.state.legendData.map((item,index)=>{
             let data=[];
-            this.state.seriesDataList[item].map((sdItem,sdIndex)=>{
+            this.state.barSeriesDataList[item].map((sdItem,sdIndex)=>{
                 data.push(sdItem.yLabel);
             });
-            series.push({name:item,type:'bar',data:data,barGap:0,itemStyle:{normal:{color:this.state.seriesColorList[item]}}});
+            series.push({name:item,type:'bar',data:data,barGap:0,itemStyle:{normal:{color:this.state.barSeriesColorList[item]}}});
         });
         this.setState({series:series});
     }
-    initSeriesDataList=()=>{
+    initTodayBjCount=(res)=>{
+        let date=new Date();
+        let year=date.getFullYear();
+        let month=date.getMonth()+1;
+        let dateOfMonth=date.getDate();
+        let todayDate=year+"-"+(month<10?"0"+month:month)+"-"+dateOfMonth;
+        let todayBjCountList=this.state.todayBjCountList;
+        res.entities.map((item,index)=>{
+            let cellMap=item.cellMap;
+            if(todayDate==cellMap[this.state.日期]){
+                console.log("todayDate==="+todayDate+","+cellMap[this.state.日期])
+                let 数据库报警类型=this.state.报警类型数据库里名称;
+                let 手机端报警类型=this.state.报警类型手机端显示名称;
+                let 数报警类型=cellMap[this.state.报警类型];
+                let 手报警类型;
+                if(数据库报警类型.紧急报警==数报警类型)
+                    手报警类型=手机端报警类型.紧急报警;
+                else if(数据库报警类型.超员报警==数报警类型||数据库报警类型.缺员报警==数报警类型)
+                    手报警类型=手机端报警类型.缺员超员报警;
+                else if(数据库报警类型.串岗报警==数报警类型||数据库报警类型.滞留报警==数报警类型)
+                    手报警类型=手机端报警类型.串岗滞留报警;
+                else if(数据库报警类型.静止报警==数报警类型)
+                    手报警类型=手机端报警类型.静止报警;
+                todayBjCountList[手报警类型]+=parseInt(cellMap[this.state.数量]);
+            }
+        });
+        console.log(todayBjCountList)
+        this.setState({todayBjCountList:todayBjCountList});
+    }
+    initBarSeriesDataList=()=>{
         //先把上次加载的数据清空
         this.state.legendData.map((item,index)=>{
-            this.state.seriesDataList[item]=[];
+            this.state.barSeriesDataList[item]=[];
         });
 
         //清空上次加载的数据后，再加载新数据
         this.state.xAxisData.map((xItem)=>{
             this.state.legendData.map((legItem,index)=>{
-                this.state.seriesDataList[legItem].push({"xLabel":xItem,"yLabel":0});
+                this.state.barSeriesDataList[legItem].push({"xLabel":xItem,"yLabel":0});
             });
         });
-        console.log("---"+JSON.stringify(this.state.seriesDataList[this.state.报警类型手机端显示名称.缺员超员报警]))
+        console.log("---"+JSON.stringify(this.state.barSeriesDataList[this.state.报警类型手机端显示名称.缺员超员报警]))
     }
-    checkXAxisDataExist=(xAxisData,xData)=>{
+    checkBarXAxisDataExist=(xAxisData,xData)=>{
         let exist=false;
         xAxisData.map((item,index)=>{
             if(item==xData){
@@ -322,7 +370,7 @@ class TestDataTj extends Component{
                 label=cellMap[this.state.月]+".22-"+cellMap[this.state.月]+"."+lastDay;
             }
         }
-        console.log("label==="+label)
+        //console.log("label==="+label)
         return label;
     }
     getBarOption =()=> {
@@ -463,7 +511,8 @@ class TestDataTj extends Component{
     }
 
     render() {
-        const {日查询常量,周查询常量,月查询常量}=this.state
+        const {日查询常量,周查询常量,月查询常量,legendData,todayBjCountList}=this.state
+        let {itemDiv}=this.state
         return <div className="bjInfoPage_div">
             <div className="top_div">报警统计</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
@@ -471,29 +520,46 @@ class TestDataTj extends Component{
                 <div className="jrbjtjsl_div">
                     <div className="jrbjsl_tit_div">今日报警</div>
                     <div className="count_list_div">
-                        <div className="item_div">
-                            <span className="text_span">人员长时间静止报警</span>
-                            <span className="count_span">33</span>
-                        </div>
-                        <div className="item_div" style={{marginTop:'-30px',marginLeft:'200px'}}>
-                            <div className="text_span">缺员报警</div>
-                            <div className="count_span">3</div>
-                        </div>
-                        <div className="item_div" style={{marginTop:'0px',marginLeft:'0px'}}>
-                            <div className="text_span">超员报警</div>
-                            <div className="count_span">3</div>
-                        </div>
-                        <div className="item_div" style={{marginTop:'-30px',marginLeft:'200px'}}>
-                            <div className="text_span">串岗报警</div>
-                            <div className="count_span">3</div>
-                        </div>
+                        {
+                            legendData.map((item,index)=>{
+                                if(index%2==0){
+                                    itemDiv=<div className="item_div" style={{marginTop:'0px',marginLeft:'0px'}}>
+                                        <span className="text_span">{item}</span>
+                                        <span className="count_span">{todayBjCountList[item]}</span>
+                                    </div>
+                                }
+                                else{
+                                    itemDiv=<div className="item_div" style={{marginTop:'-30px',marginLeft:'200px'}}>
+                                            <div className="text_span">{item}</div>
+                                            <div className="count_span">{todayBjCountList[item]}</div>
+                                        </div>
+                                }
+                                return itemDiv
+                            })
+                        }
+                        {/*<div className="item_div">*/}
+                        {/*    <span className="text_span">人员长时间静止报警</span>*/}
+                        {/*    <span className="count_span">33</span>*/}
+                        {/*</div>*/}
+                        {/*<div className="item_div" style={{marginTop:'-30px',marginLeft:'200px'}}>*/}
+                        {/*    <div className="text_span">缺员报警</div>*/}
+                        {/*    <div className="count_span">3</div>*/}
+                        {/*</div>*/}
+                        {/*<div className="item_div" style={{marginTop:'0px',marginLeft:'0px'}}>*/}
+                        {/*    <div className="text_span">超员报警</div>*/}
+                        {/*    <div className="count_span">3</div>*/}
+                        {/*</div>*/}
+                        {/*<div className="item_div" style={{marginTop:'-30px',marginLeft:'200px'}}>*/}
+                        {/*    <div className="text_span">串岗报警</div>*/}
+                        {/*    <div className="count_span">3</div>*/}
+                        {/*</div>*/}
                     </div>
                 </div>
                 <div className="search_type_div">
                     <div className="but_div" id="but_div">
-                        <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initListByMenuId(日查询常量,true)}>日</div>
-                        <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initListByMenuId(周查询常量,true)}>周</div>
-                        <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initListByMenuId(月查询常量,true)}>月</div>
+                        <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initBarListByMenuId(日查询常量,true)}>日</div>
+                        <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initBarListByMenuId(周查询常量,true)}>周</div>
+                        <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initBarListByMenuId(月查询常量,true)}>月</div>
                     </div>
                 </div>
                 {/*<DatePicker*/}
