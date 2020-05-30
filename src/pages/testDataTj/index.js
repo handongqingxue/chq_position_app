@@ -73,7 +73,6 @@ class TestDataTj extends Component{
             url:`api2/entity/list/${queryKey}/data`,
             method:'GET',
         }).then((res) => {
-            console.log("==="+JSON.stringify(res));
             this.initXAxisData(res);
             this.initSeriesDataList();
             this.initYAxisData(res);
@@ -217,6 +216,7 @@ class TestDataTj extends Component{
         this.setState({xAxisData:xAxisData});
     }
     initYAxisData=(res)=>{
+        console.log("==="+JSON.stringify(res));
         let series=[];
         let seriesData;
         res.entities.map((item,index)=>{
@@ -250,7 +250,15 @@ class TestDataTj extends Component{
                     }
                 });
             }
-            console.log(手报警类型+":"+JSON.stringify(this.state.seriesDataList[手机端报警类型.静止报警]))
+            else if(this.state.searchFlag==this.state.月查询常量){
+                this.state.seriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                    if(sdItem.xLabel==cellMap[this.state.月]){
+                        //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
+                        sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.数量]);
+                    }
+                });
+            }
+            console.log(手报警类型+":"+JSON.stringify(this.state.seriesDataList[手报警类型]))//经测试没问题
         });
 
         this.state.legendData.map((item,index)=>{
@@ -263,12 +271,18 @@ class TestDataTj extends Component{
         this.setState({series:series});
     }
     initSeriesDataList=()=>{
+        //先把上次加载的数据清空
+        this.state.legendData.map((item,index)=>{
+            this.state.seriesDataList[item]=[];
+        });
+
+        //清空上次加载的数据后，再加载新数据
         this.state.xAxisData.map((xItem)=>{
             this.state.legendData.map((legItem,index)=>{
                 this.state.seriesDataList[legItem].push({"xLabel":xItem,"yLabel":0});
             });
         });
-        console.log("---"+JSON.stringify(this.state.seriesDataList[this.state.报警类型手机端显示名称.紧急报警]))
+        console.log("---"+JSON.stringify(this.state.seriesDataList[this.state.报警类型手机端显示名称.缺员超员报警]))
     }
     checkXAxisDataExist=(xAxisData,xData)=>{
         let exist=false;
