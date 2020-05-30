@@ -26,29 +26,29 @@ class TestDataTj extends Component{
         this.state.searchFlag=flag;
         let disabledColIds="";
         $("#but_div div").css("color","#000");
-        $("#but_div div").css("border-bottom","#fff solid 3px");
+        $("#but_div div").css("border-bottom","#fff solid 1px");
         if(this.state.searchFlag==this.state.日查询常量){
             $("#but_div #date_but_div").css("color","#477A8F");
-            $("#but_div #date_but_div").css("border-bottom","#497DD0 solid 3px");
+            $("#but_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds="";
-            this.state.X轴字号=12;
+            this.state.X轴字号=10;
             this.state.alignWithLabel=true;
         }
         else if(this.state.searchFlag==this.state.周查询常量){
             $("#but_div #week_but_div").css("color","#477A8F");
-            $("#but_div #week_but_div").css("border-bottom","#497DD0 solid 3px");
+            $("#but_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.日;
-            this.state.X轴字号=10;
+            this.state.X轴字号=9;
             this.state.alignWithLabel=false;
         }
         else if(this.state.searchFlag==this.state.月查询常量){
-            $("#but_div #year_but_div").css("color","#477A8F");
-            $("#but_div #year_but_div").css("border-bottom","#497DD0 solid 3px");
+            $("#but_div #month_but_div").css("color","#477A8F");
+            $("#but_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.日+","+this.state.月度周;
-            this.state.X轴字号=10;
+            this.state.X轴字号=9;
             this.state.alignWithLabel=true;
         }
         Super.super({
@@ -164,7 +164,7 @@ class TestDataTj extends Component{
         let xAxisData=[];
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
-            console.log("cellMap==="+JSON.stringify(cellMap));
+            //console.log("cellMap==="+JSON.stringify(cellMap));
             if(this.state.searchFlag==this.state.日查询常量){
                 if(!this.checkXAxisDataExist(xAxisData,cellMap[this.state.月]+"-"+cellMap[this.state.日])){
                     xAxisData.push(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
@@ -241,7 +241,15 @@ class TestDataTj extends Component{
                     }
                 });
             }
-            console.log(手报警类型+":"+JSON.stringify(this.state.seriesDataList[手报警类型]))
+            else if(this.state.searchFlag==this.state.周查询常量){
+                this.state.seriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                    if(sdItem.xLabel==this.formatterXAxisData(cellMap,this.state.周查询常量)){
+                        //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
+                        sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.数量]);
+                    }
+                });
+            }
+            console.log(手报警类型+":"+JSON.stringify(this.state.seriesDataList[手机端报警类型.静止报警]))
         });
 
         this.state.legendData.map((item,index)=>{
@@ -299,7 +307,7 @@ class TestDataTj extends Component{
                 label=cellMap[this.state.月]+".22-"+cellMap[this.state.月]+"."+lastDay;
             }
         }
-        //console.log("label==="+label)
+        console.log("label==="+label)
         return label;
     }
     getOption =()=> {
@@ -313,14 +321,23 @@ class TestDataTj extends Component{
             legend:{
                 itemWidth:10,
                 itemHeight:10,
-                x:'50px',
-                y: '5px',
+                x:'center',
+                y: '15px',
+                textStyle:{
+                    fontSize:9
+                },
                 data:this.state.legendData
             },
             xAxis:{
                 //data:['周一','周二','周三','周四','周五','周六','周日']
                 data:this.state.xAxisData,
                 axisTick:{alignWithLabel:this.state.alignWithLabel},
+                axisLine:{
+                    lineStyle:{
+                        color:"#999",
+                        width:0.5
+                    }
+                },
                 axisLabel: {
                     fontSize:this.state.X轴字号,
                     interval:0
@@ -329,7 +346,22 @@ class TestDataTj extends Component{
             },
             yAxis:{
                 type:'value',
-                minInterval: 1
+                minInterval: 1,
+                axisLine:{
+                    lineStyle:{
+                        color:"#999",
+                        width:0.5
+                    }
+                },
+                axisLabel:{
+                    fontSize:9
+                },
+                splitLine:{
+                    lineStyle:{
+                        color:"#ddd",
+                        width:0.5
+                    }
+                }
             },
             series:this.state.series
                 /*
