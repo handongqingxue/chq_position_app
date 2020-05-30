@@ -2,7 +2,8 @@ import {withRouter} from "react-router-dom";
 import React, {Component} from 'react'
 import "./index.less";
 import $ from "jquery";
-import ReactEcharts from "echarts-for-react";
+import BarReactEcharts from "echarts-for-react";
+import PieReactEcharts from "echarts-for-react";
 import { DatePicker, List } from 'antd-mobile';
 import enUs from 'antd-mobile/lib/date-picker/locale/en_US';
 import Super from "../../super";
@@ -310,7 +311,7 @@ class TestDataTj extends Component{
         console.log("label==="+label)
         return label;
     }
-    getOption =()=> {
+    getBarOption =()=> {
         let option = {
             tooltip:{   //展示数据
                 trigger:'axis',
@@ -380,6 +381,53 @@ class TestDataTj extends Component{
                 }
             ]
                  */
+        }
+        return option;
+    }
+    getPieOption=()=>{
+        let option = {
+            title: {
+                text: '天气情况统计',
+                subtext: '虚构数据',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b} : {c} ({d}%)'
+            },
+            legend: {
+                // orient: 'vertical',
+                // top: 'middle',
+                bottom: 10,
+                left: 'center',
+                data: ['西凉', '益州', '兖州', '荆州', '幽州']
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: '65%',
+                    center: ['50%', '50%'],
+                    label: {
+                        position: 'inner'
+                    },
+                    //roseType : 'area',
+                    selectedMode: 'single',
+                    data: [
+                        {value: 1548,name: '幽州', selected: true},
+                        {value: 535, name: '荆州'},
+                        {value: 510, name: '兖州', selected: true},
+                        {value: 634, name: '益州'},
+                        {value: 735, name: '西凉', selected: true}
+                    ],
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
         }
         return option;
     }
@@ -453,7 +501,12 @@ class TestDataTj extends Component{
                 {/*    <List.Item arrow="horizontal">2021-01-01</List.Item>*/}
                 {/*</DatePicker>*/}
             </div>
-            <ReactEcharts className="reactEcharts" id="echart" option={this.getOption()}/>
+            <div className="bar_div">
+                <BarReactEcharts className="reactEcharts" id="echart" option={this.getBarOption()}/>
+                <PieReactEcharts className="reactEcharts" id="echart" option={this.getPieOption()}/>
+            </div>
+            <div className="pie_div">
+            </div>
         </div>;
     }
 }
