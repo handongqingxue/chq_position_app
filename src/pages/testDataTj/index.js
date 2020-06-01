@@ -419,11 +419,27 @@ class TestDataTj extends Component{
         entities.map((item,index)=> {
             bjqySelectList.map((bjqylItem,bjqylIndex)=>{
                 let cellMap = item.cellMap;
-                console.log("===+++"+cellMap[this.state.报警围栏]+","+cellMap[this.state.数量]+","+JSON.stringify(bjqylItem["默认字段组"]))
+                console.log("===+++"+JSON.stringify(cellMap))
                 if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.报警围栏]){
-                    console.log(888888)
+                    let bjlxList=[];
+                    this.state.barLegendData.map((bjlxItem,bjlxIndex)=>{
+                        let 数据库报警类型=this.state.报警类型数据库里名称;
+                        let 手机端报警类型=this.state.报警类型手机端显示名称;
+                        let 数报警类型=cellMap[this.state.报警类型];
+                        let 手报警类型;
+                        if(数据库报警类型.紧急报警==数报警类型)
+                            手报警类型=手机端报警类型.紧急报警;
+                        else if(数据库报警类型.超员报警==数报警类型||数据库报警类型.缺员报警==数报警类型)
+                            手报警类型=手机端报警类型.缺员超员报警;
+                        else if(数据库报警类型.串岗报警==数报警类型||数据库报警类型.滞留报警==数报警类型)
+                            手报警类型=手机端报警类型.串岗滞留报警;
+                        else if(数据库报警类型.静止报警==数报警类型)
+                            手报警类型=手机端报警类型.静止报警;
+
+                        bjlxList.push({name:手报警类型,count:cellMap[this.state.数量]});
+                    });
                     //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
-                    pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
+                    pieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["名称"],bjlxList:bjlxList, selected: true});
                 }
                 //if(item["围栏名称"]==)
             });
@@ -554,7 +570,17 @@ class TestDataTj extends Component{
             },
             tooltip: {
                 trigger: 'item',
-                formatter: '{a} <br/>{b} : {c} ({d}%)'
+                //formatter: '{a} <br/>{b} : {c} ({d}%)<br/>aaaaaaa'
+                formatter:function (json) {
+                    console.log("json==="+JSON.stringify(json)+","+JSON.stringify(json["data"]["bjlxList"]))
+                    let html="";
+                    html+=json["data"]["name"]+":"+json["data"]["value"]
+                    let bjlxList=json["data"]["bjlxList"];
+                    bjlxList.map((item,index)=>{
+                        html+="<br/>"+item.name+":"+item.count
+                    });
+                    return html
+                }
             },
             legend: {
                 // orient: 'vertical',
@@ -576,19 +602,17 @@ class TestDataTj extends Component{
                     data:this.state.pieSeriesDataList,
                     /*
                     data: [
-                        {value: 1548,name: '一车间', selected: true},
+                        {value: 1548,name: '一车间',name1:'aaa', selected: true},
                         {value: 535, name: '荆州'},
                         {value: 510, name: '兖州', selected: true},
                         {value: 634, name: '益州'},
                         {value: 735, name: '西凉', selected: true}
                     ],
                     */
-                    emphasis: {
-                        itemStyle: {
-                            shadowBlur: 10,
-                            shadowOffsetX: 0,
-                            shadowColor: 'rgba(0, 0, 0, 0.5)'
-                        }
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
                 }
             ]
