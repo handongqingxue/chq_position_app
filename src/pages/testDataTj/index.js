@@ -11,15 +11,15 @@ import * as moment from "moment";
 import Text from "antd-mobile/es/text";
 
 class TestDataTj extends Component{
-    state={menuId:17,legendData:[],xAxisData:[],series:[],searchFlag:"",startDate:"",endDate:"",
-        日期:96157841629187,
-        月度周:96157841629190,
-        日:96157841629191,
-        月:96157841629189,
-        报警类型:96157841629192,
-        年:96157841629188,
-        数量:96157841629193,
-        日查询常量:"date",周查询常量:"week",月查询常量:"month",
+    state={menuId:17,barLegendData:[],xAxisData:[],series:[],barSearchFlag:"",pieSearchFlag:"",startDate:"",endDate:"",
+        日期:96464963248131,
+        月度周:96464963248134,
+        日:96464963248135,
+        月:96464963248133,
+        报警类型:96464963248136,
+        年:96464963248132,
+        数量:96464963248137,
+        日查询常量:"date",周查询常量:"week",月查询常量:"month",三个月查询常量:"three_month",
         报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
         报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"},
         alignWithLabel:false,X轴字号:"",barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],todayBjCountList:[]}
@@ -32,29 +32,29 @@ class TestDataTj extends Component{
         this.initBarListByMenuId(this.state.日查询常量,false);
     }
     initBarListByMenuId=(flag,reload)=>{
-        this.state.searchFlag=flag;
+        this.state.barSearchFlag=flag;
         let disabledColIds="";
-        $("#but_div div").css("color","#000");
-        $("#but_div div").css("border-bottom","#fff solid 1px");
-        if(this.state.searchFlag==this.state.日查询常量){
-            $("#but_div #date_but_div").css("color","#477A8F");
-            $("#but_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
+        $("#bar_search_type_div #but_div div").css("color","#000");
+        $("#bar_search_type_div #but_div div").css("border-bottom","#fff solid 1px");
+        if(this.state.barSearchFlag==this.state.日查询常量){
+            $("#bar_search_type_div #date_but_div").css("color","#477A8F");
+            $("#bar_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds="";
             this.state.X轴字号=10;
             this.state.alignWithLabel=true;
         }
-        else if(this.state.searchFlag==this.state.周查询常量){
-            $("#but_div #week_but_div").css("color","#477A8F");
-            $("#but_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
+        else if(this.state.barSearchFlag==this.state.周查询常量){
+            $("#bar_search_type_div #week_but_div").css("color","#477A8F");
+            $("#bar_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.日;
             this.state.X轴字号=9;
             this.state.alignWithLabel=false;
         }
-        else if(this.state.searchFlag==this.state.月查询常量){
-            $("#but_div #month_but_div").css("color","#477A8F");
-            $("#but_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
+        else if(this.state.barSearchFlag==this.state.月查询常量){
+            $("#bar_search_type_div #month_but_div").css("color","#477A8F");
+            $("#bar_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.日+","+this.state.月度周;
             this.state.X轴字号=9;
@@ -75,6 +75,34 @@ class TestDataTj extends Component{
             }
             this.initBarListByQueryKey(res.queryKey,reload);
         })
+    }
+    initPieListByMenuId=(flag,reload)=>{
+        this.state.pieSearchFlag=flag;
+        let disabledColIds="";
+        $("#pie_search_type_div #but_div div").css("color","#000");
+        $("#pie_search_type_div #but_div div").css("border-bottom","#fff solid 1px");
+        if(this.state.pieSearchFlag==this.state.日查询常量){
+            $("#pie_search_type_div #date_but_div").css("color","#477A8F");
+            $("#pie_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            disabledColIds="";
+        }
+        else if(this.state.pieSearchFlag==this.state.周查询常量){
+            $("#pie_search_type_div #week_but_div").css("color","#477A8F");
+            $("#pie_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            disabledColIds=this.state.日;
+        }
+        else if(this.state.pieSearchFlag==this.state.月查询常量){
+            $("#pie_search_type_div #month_but_div").css("color","#477A8F");
+            $("#pie_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            disabledColIds=this.state.日+","+this.state.月度周;
+        }
+        else if(this.state.pieSearchFlag==this.state.三个月查询常量) {
+            $("#pie_search_type_div #three_month_but_div").css("color", "#477A8F");
+            $("#pie_search_type_div #three_month_but_div").css("border-bottom", "#497DD0 solid 1px");
+        }
     }
     initBarListByQueryKey=(queryKey,reload)=>{
         Super.super({
@@ -175,7 +203,7 @@ class TestDataTj extends Component{
                          */
                 }
             });
-            this.setState({legendData:ldMap});
+            this.setState({barLegendData:ldMap});
             //this.setState({series:series});
         })
     }
@@ -184,17 +212,17 @@ class TestDataTj extends Component{
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
             //console.log("cellMap==="+JSON.stringify(cellMap));
-            if(this.state.searchFlag==this.state.日查询常量){
+            if(this.state.barSearchFlag==this.state.日查询常量){
                 if(!this.checkBarXAxisDataExist(xAxisData,cellMap[this.state.月]+"-"+cellMap[this.state.日])){
                     xAxisData.push(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
                 }
             }
-            else if(this.state.searchFlag==this.state.周查询常量){
-                let fxd=this.formatterXAxisData(cellMap,this.state.searchFlag)
+            else if(this.state.barSearchFlag==this.state.周查询常量){
+                let fxd=this.formatterXAxisData(cellMap,this.state.barSearchFlag)
                 if(!this.checkBarXAxisDataExist(xAxisData,fxd))
                     xAxisData.push(fxd);
             }
-            else if(this.state.searchFlag==this.state.月查询常量){
+            else if(this.state.barSearchFlag==this.state.月查询常量){
                 if(!this.checkBarXAxisDataExist(xAxisData,cellMap[this.state.月]))
                     xAxisData.push(cellMap[this.state.月]);
             }
@@ -203,11 +231,11 @@ class TestDataTj extends Component{
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
             //console.log("cellMap==="+JSON.stringify(cellMap));
-            if(this.state.searchFlag==this.state.日查询常量)
+            if(this.state.barSearchFlag==this.state.日查询常量)
                 xAxisData.push(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
-            else if(this.state.searchFlag==this.state.周查询常量)
+            else if(this.state.barSearchFlag==this.state.周查询常量)
                 xAxisData.push(cellMap[this.state.年]+"年"+cellMap[this.state.月]+"月"+cellMap[this.state.月度周]);
-            else if(this.state.searchFlag==this.state.月查询常量)
+            else if(this.state.barSearchFlag==this.state.月查询常量)
                 xAxisData.push(cellMap[this.state.年]+"年"+cellMap[this.state.月]+"月");
             let 数据库报警类型=this.state.报警类型数据库里名称;
             let 手机端报警类型=this.state.报警类型手机端显示名称;
@@ -253,7 +281,7 @@ class TestDataTj extends Component{
             else if(数据库报警类型.静止报警==数报警类型)
                 手报警类型=手机端报警类型.静止报警;
 
-            if(this.state.searchFlag==this.state.日查询常量){
+            if(this.state.barSearchFlag==this.state.日查询常量){
                 //console.log(cellMap[this.state.月]+"-"+cellMap[this.state.日]);
                 this.state.barSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
                     if(sdItem.xLabel==cellMap[this.state.月]+"-"+cellMap[this.state.日]){
@@ -261,7 +289,7 @@ class TestDataTj extends Component{
                     }
                 });
             }
-            else if(this.state.searchFlag==this.state.周查询常量){
+            else if(this.state.barSearchFlag==this.state.周查询常量){
                 this.state.barSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
                     if(sdItem.xLabel==this.formatterXAxisData(cellMap,this.state.周查询常量)){
                         //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
@@ -269,7 +297,7 @@ class TestDataTj extends Component{
                     }
                 });
             }
-            else if(this.state.searchFlag==this.state.月查询常量){
+            else if(this.state.barSearchFlag==this.state.月查询常量){
                 this.state.barSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
                     if(sdItem.xLabel==cellMap[this.state.月]){
                         //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
@@ -280,7 +308,7 @@ class TestDataTj extends Component{
             console.log(手报警类型+":"+JSON.stringify(this.state.barSeriesDataList[手报警类型]))//经测试没问题
         });
 
-        this.state.legendData.map((item,index)=>{
+        this.state.barLegendData.map((item,index)=>{
             let data=[];
             this.state.barSeriesDataList[item].map((sdItem,sdIndex)=>{
                 data.push(sdItem.yLabel);
@@ -320,13 +348,13 @@ class TestDataTj extends Component{
     }
     initBarSeriesDataList=()=>{
         //先把上次加载的数据清空
-        this.state.legendData.map((item,index)=>{
+        this.state.barLegendData.map((item,index)=>{
             this.state.barSeriesDataList[item]=[];
         });
 
         //清空上次加载的数据后，再加载新数据
         this.state.xAxisData.map((xItem)=>{
-            this.state.legendData.map((legItem,index)=>{
+            this.state.barLegendData.map((legItem,index)=>{
                 this.state.barSeriesDataList[legItem].push({"xLabel":xItem,"yLabel":0});
             });
         });
@@ -389,7 +417,7 @@ class TestDataTj extends Component{
                 textStyle:{
                     fontSize:9
                 },
-                data:this.state.legendData
+                data:this.state.barLegendData
             },
             xAxis:{
                 //data:['周一','周二','周三','周四','周五','周六','周日']
@@ -449,8 +477,8 @@ class TestDataTj extends Component{
     getPieOption=()=>{
         let option = {
             title: {
-                text: '天气情况统计',
-                subtext: '虚构数据',
+                text: '车间报警统计',
+                //subtext: '虚构数据',
                 left: 'center'
             },
             tooltip: {
@@ -511,7 +539,7 @@ class TestDataTj extends Component{
     }
 
     render() {
-        const {日查询常量,周查询常量,月查询常量,legendData,todayBjCountList}=this.state
+        const {日查询常量,周查询常量,月查询常量,三个月查询常量,barLegendData,todayBjCountList}=this.state
         let {itemDiv}=this.state
         return <div className="bjInfoPage_div">
             <div className="top_div">报警统计</div>
@@ -521,7 +549,7 @@ class TestDataTj extends Component{
                     <div className="jrbjsl_tit_div">今日报警</div>
                     <div className="count_list_div">
                         {
-                            legendData.map((item,index)=>{
+                            barLegendData.map((item,index)=>{
                                 if(index%2==0){
                                     itemDiv=<div className="item_div" style={{marginTop:'0px',marginLeft:'0px'}}>
                                         <span className="text_span">{item}</span>
@@ -555,7 +583,7 @@ class TestDataTj extends Component{
                         {/*</div>*/}
                     </div>
                 </div>
-                <div className="search_type_div">
+                <div className="bar_search_type_div" id="bar_search_type_div">
                     <div className="but_div" id="but_div">
                         <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initBarListByMenuId(日查询常量,true)}>日</div>
                         <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initBarListByMenuId(周查询常量,true)}>周</div>
@@ -583,9 +611,17 @@ class TestDataTj extends Component{
             </div>
             <div className="bar_div">
                 <BarReactEcharts className="reactEcharts" id="echart" option={this.getBarOption()}/>
-                <PieReactEcharts className="reactEcharts" id="echart" option={this.getPieOption()}/>
+            </div>
+            <div className="pie_search_type_div" id="pie_search_type_div">
+                <div className="but_div" id="but_div">
+                    <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initPieListByMenuId(日查询常量,true)}>日</div>
+                    <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initPieListByMenuId(周查询常量,true)}>周</div>
+                    <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initPieListByMenuId(月查询常量,true)}>月</div>
+                    <div className="three_month_but_div" id="three_month_but_div" onClick={(e)=>this.initPieListByMenuId(三个月查询常量,true)}>三个月</div>
+                </div>
             </div>
             <div className="pie_div">
+                <PieReactEcharts className="reactEcharts" id="echart" option={this.getPieOption()}/>
             </div>
         </div>;
     }
