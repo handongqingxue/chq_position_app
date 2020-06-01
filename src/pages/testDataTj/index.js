@@ -11,18 +11,19 @@ import * as moment from "moment";
 import Text from "antd-mobile/es/text";
 
 class TestDataTj extends Component{
-    state={menuId:17,barLegendData:[],xAxisData:[],series:[],barSearchFlag:"",pieSearchFlag:"",startDate:"",endDate:"",
-        日期:96464963248131,
-        月度周:96464963248134,
-        日:96464963248135,
-        月:96464963248133,
-        报警类型:96464963248136,
-        年:96464963248132,
-        数量:96464963248137,
+    state={menuId:17,barLegendData:[],pieLegendData:[],xAxisData:[],series:[],barSearchFlag:"",pieSearchFlag:"",barStartDate:"",barEndDate:"",
+        报警围栏:96488543625218,
+        日期:96488543625219,
+        月度周:96488543625225,
+        日:96488543625223,
+        月:96488543625221,
+        报警类型:96488543625224,
+        年:96488543625221,
+        数量:96488543625225,
         日查询常量:"date",周查询常量:"week",月查询常量:"month",三个月查询常量:"three_month",
         报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
         报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"},
-        alignWithLabel:false,X轴字号:"",barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],todayBjCountList:[]}
+        alignWithLabel:false,X轴字号:"",barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],todayBjCountList:[],bjqyList:[],pieSeriesDataList:[]}
 
     componentDidMount() {
         $("html").css("background-color","#F5F5F5");
@@ -30,6 +31,7 @@ class TestDataTj extends Component{
     }
     request=()=>{
         this.initBarListByMenuId(this.state.日查询常量,false);
+        this.initPieListByMenuId(this.state.日查询常量,false);
     }
     initBarListByMenuId=(flag,reload)=>{
         this.state.barSearchFlag=flag;
@@ -63,7 +65,7 @@ class TestDataTj extends Component{
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{disabledColIds:disabledColIds,sortColIds:(68+"_ASC"),criteria_13:this.state.startDate+"~"+this.state.endDate}
+            query:{disabledColIds:disabledColIds,sortColIds:(68+"_ASC"),criteria_13:this.state.barStartDate+"~"+this.state.barEndDate}
         }).then((res) => {
             console.log(res);
             if(!reload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
@@ -103,6 +105,21 @@ class TestDataTj extends Component{
             $("#pie_search_type_div #three_month_but_div").css("color", "#477A8F");
             $("#pie_search_type_div #three_month_but_div").css("border-bottom", "#497DD0 solid 1px");
         }
+
+        let startDate=this.getAddDate(-90);
+        let endDate=this.getTodayDate();
+        this.getTodayDate();
+        Super.super({
+            url:`api2/entity/${this.state.menuId}/list/tmpl`,
+            method:'GET',
+            query:{disabledColIds:disabledColIds,sortColIds:(68+"_ASC"),criteria_13:startDate+"~"+endDate}
+        }).then((res) => {
+            console.log("饼状图数据==="+JSON.stringify(res));
+            if(!reload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
+                this.initPielegendData(31193);
+            }
+            this.initPieListByQueryKey(res.queryKey,reload);
+        })
     }
     initBarListByQueryKey=(queryKey,reload)=>{
         Super.super({
@@ -114,6 +131,14 @@ class TestDataTj extends Component{
             this.initYAxisData(res);
             if(!reload)
                 this.initTodayBjCount(res);
+        })
+    }
+    initPieListByQueryKey=(queryKey,reload)=>{
+        Super.super({
+            url:`api2/entity/list/${queryKey}/data`,
+            method:'GET',
+        }).then((res) =>{
+            this.initPieSeriesDataList(res);
         })
     }
     initBarlegendData=(fieldId)=>{
@@ -206,6 +231,21 @@ class TestDataTj extends Component{
             this.setState({barLegendData:ldMap});
             //this.setState({series:series});
         })
+    }
+    initPielegendData=(fieldId)=>{
+        Super.super({
+            url:`api2/ks/clist/elefence/list/data`,
+            method:'GET',
+            query: {fieldIds:fieldId}
+        }).then((res) => {
+            let pieLegendData=[];
+            this.state.bjqySelectList=res.result.entities;
+            this.state.bjqySelectList.map((item,index)=>{
+                pieLegendData.push(item["默认字段组"]["名称"]);
+            });
+
+            this.setState({pieLegendData:pieLegendData});
+        });
     }
     initBarXAxisData=(res)=>{
         let xAxisData=[];
@@ -318,11 +358,7 @@ class TestDataTj extends Component{
         this.setState({series:series});
     }
     initTodayBjCount=(res)=>{
-        let date=new Date();
-        let year=date.getFullYear();
-        let month=date.getMonth()+1;
-        let dateOfMonth=date.getDate();
-        let todayDate=year+"-"+(month<10?"0"+month:month)+"-"+dateOfMonth;
+        let todayDate=this.getTodayDate();
         let todayBjCountList=this.state.todayBjCountList;
         res.entities.map((item,index)=>{
             let cellMap=item.cellMap;
@@ -346,6 +382,22 @@ class TestDataTj extends Component{
         console.log(todayBjCountList)
         this.setState({todayBjCountList:todayBjCountList});
     }
+    getTodayDate=()=>{
+        let date=new Date();
+        let year=date.getFullYear();
+        let month=date.getMonth()+1;
+        let dateOfMonth=date.getDate();
+        let todayDate=year+"-"+(month<10?"0"+month:month)+"-"+(dateOfMonth<10?"0"+dateOfMonth:dateOfMonth);
+        return todayDate;
+    }
+    getAddDate=(days)=>{
+        let date=new Date();
+        date=new Date(date.setDate(date.getDate()+days));
+        let year=date.getFullYear();
+        let month=date.getMonth()+1;
+        let dateOfMonth=date.getDate();
+        return year+"-"+(month<10?"0"+month:month)+"-"+(dateOfMonth<10?"0"+dateOfMonth:dateOfMonth);
+    }
     initBarSeriesDataList=()=>{
         //先把上次加载的数据清空
         this.state.barLegendData.map((item,index)=>{
@@ -359,6 +411,25 @@ class TestDataTj extends Component{
             });
         });
         console.log("---"+JSON.stringify(this.state.barSeriesDataList[this.state.报警类型手机端显示名称.缺员超员报警]))
+    }
+    initPieSeriesDataList=(res)=>{
+        let entities=res.entities;
+        let bjqySelectList=this.state.bjqySelectList;
+        let pieSeriesDataList=[];
+        entities.map((item,index)=> {
+            bjqySelectList.map((bjqylItem,bjqylIndex)=>{
+                let cellMap = item.cellMap;
+                console.log("===+++"+cellMap[this.state.报警围栏]+","+cellMap[this.state.数量]+","+JSON.stringify(bjqylItem["默认字段组"]))
+                if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.报警围栏]){
+                    console.log(888888)
+                    //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
+                    pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
+                }
+                //if(item["围栏名称"]==)
+            });
+        });
+        this.setState({pieSeriesDataList:pieSeriesDataList});
+        console.log(JSON.stringify(pieSeriesDataList))
     }
     checkBarXAxisDataExist=(xAxisData,xData)=>{
         let exist=false;
@@ -490,7 +561,7 @@ class TestDataTj extends Component{
                 // top: 'middle',
                 bottom: 10,
                 left: 'center',
-                data: ['西凉', '益州', '兖州', '荆州', '幽州']
+                data: this.state.pieLegendData
             },
             series: [
                 {
@@ -502,13 +573,16 @@ class TestDataTj extends Component{
                     },
                     //roseType : 'area',
                     selectedMode: 'single',
+                    data:this.state.pieSeriesDataList,
+                    /*
                     data: [
-                        {value: 1548,name: '幽州', selected: true},
+                        {value: 1548,name: '一车间', selected: true},
                         {value: 535, name: '荆州'},
                         {value: 510, name: '兖州', selected: true},
                         {value: 634, name: '益州'},
                         {value: 735, name: '西凉', selected: true}
                     ],
+                    */
                     emphasis: {
                         itemStyle: {
                             shadowBlur: 10,
@@ -523,9 +597,9 @@ class TestDataTj extends Component{
     }
     setDPDate=(flag,value)=>{
         if(flag=="start")
-            this.state.startDate=moment(value).format('YYYY-MM-DD HH:mm:ss');
+            this.state.barStartDate=moment(value).format('YYYY-MM-DD HH:mm:ss');
         else if(flag=="end")
-            this.state.endDate=moment(value).format('YYYY-MM-DD HH:mm:ss');
+            this.state.barEndDate=moment(value).format('YYYY-MM-DD HH:mm:ss');
     }
     getShowDate=(value)=>{
         let dateValue = moment(value).format("YYYY-MM");
