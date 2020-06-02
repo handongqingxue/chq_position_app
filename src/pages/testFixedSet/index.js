@@ -3,7 +3,7 @@ import {withRouter} from "react-router-dom";
 import Super from "../../super";
 
 class TestFixedSet extends Component{
-    state={menuId:96653404938261,groupsList:[],selectList:[]}
+    state={menuId:96653404938261,groupsList:[],selectList:[],fieldItemList:[]}
 
     componentDidMount(){
         this.request();
@@ -41,9 +41,20 @@ class TestFixedSet extends Component{
                 this.setState({selectList:selectList});
             });
         });
+
+        Super.super({
+            url:`api2/entity/${this.state.menuId}/detail/98972186405904392`,
+            method:'GET',
+        }).then((resi)=>{
+            let fieldMap=resi.entity.fieldMap;
+            console.log("resi.fieldMap==="+JSON.stringify(fieldMap))
+            for(let key in fieldMap){
+                this.state.fieldItemList[key]=fieldMap[key];
+            }
+        });
     }
     render() {
-        const {groupsList,selectList}=this.state
+        const {groupsList,selectList,fieldItemList}=this.state
         let {itemDiv,itemFields,fieldDiv}=this.state
         return <div className="fsPage_div">
             <div className="groups_list_div">
@@ -55,7 +66,7 @@ class TestFixedSet extends Component{
                                     item.fields.map((fieldItem,fieldIndex)=>{
                                         return <div fieldId={fieldItem.fieldId}>
                                             <div>{fieldItem.title}</div>
-                                            <div>{fieldItem.fieldId}-{fieldItem.type}</div>
+                                            <div>{fieldItem.id}-{fieldItem.type}</div>
                                             <div>
                                                 {fieldItem.type=="select"
                                                     ?
@@ -71,7 +82,7 @@ class TestFixedSet extends Component{
                                                         }
                                                     </select>
                                                     :
-                                                    'aaa'
+                                                    <div id={'field_item_div'+fieldItem.id}>{fieldItemList[fieldItem.id]}</div>
                                                 }
                                             </div>
                                         </div>
