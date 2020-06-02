@@ -91,7 +91,7 @@ class Details extends Component {
 			url =`api2/meta/tmpl/${menuId}/dtmpl/normal/`
 		}
 		Super.super({url,method:"GET",}).then((res) => {
-			console.log("==="+JSON.stringify(res));
+			console.log("111==="+JSON.stringify(res));
 			const premises=res.config.premises
 			const menuTitle=res.menu?res.menu.title:null
 			const {scrollIds}=this.state
@@ -138,6 +138,7 @@ class Details extends Component {
 			
 	}
 	loadDataToList=(dtmplGroup,fieldMap,arrayMap)=>{
+		console.log("dtmplGroup==="+JSON.stringify(dtmplGroup))
 		dtmplGroup.forEach((item)=>{
 			let flag=false // 是否添加关系
 			const relaOptions = []
@@ -369,7 +370,7 @@ class Details extends Component {
 						delete values[k]
 					}
 				}
-				console.log(values)
+				console.log("values==="+JSON.stringify(values))
 				const formData = new FormData(); 
 				formData.append('唯一编码', code?code:"");
 				for(let k in values) {
@@ -381,6 +382,7 @@ class Details extends Component {
 				}else{
 					url=`api2/entity/${menuId}/detail/normal`
 				}
+				return false;
 				Super.super({
 					url,
 					method:'POST',
@@ -410,6 +412,7 @@ class Details extends Component {
 		this.SelectTemplate = ref
 	}
 	loadTemplate = (entities,addModal) => {
+		console.log("loadTemplate==="+JSON.stringify(entities))
 		entities.forEach((item)=>{
 			for(let k in item.byDfieldIds){
 				addModal.fields.forEach((it)=>{

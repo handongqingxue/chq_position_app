@@ -81,6 +81,8 @@ class TestDataTj extends Component{
     initPieListByMenuId=(flag,reload)=>{
         this.state.pieSearchFlag=flag;
         let disabledColIds="";
+        let startDate;
+        let days;
         $("#pie_search_type_div #but_div div").css("color","#000");
         $("#pie_search_type_div #but_div div").css("border-bottom","#fff solid 1px");
         if(this.state.pieSearchFlag==this.state.日查询常量){
@@ -88,27 +90,31 @@ class TestDataTj extends Component{
             $("#pie_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds="";
+            days=-1;
         }
         else if(this.state.pieSearchFlag==this.state.周查询常量){
             $("#pie_search_type_div #week_but_div").css("color","#477A8F");
             $("#pie_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.日;
+            days=-7;
         }
         else if(this.state.pieSearchFlag==this.state.月查询常量){
             $("#pie_search_type_div #month_but_div").css("color","#477A8F");
             $("#pie_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.日+","+this.state.月度周;
+            days=-30;
         }
         else if(this.state.pieSearchFlag==this.state.三个月查询常量) {
             $("#pie_search_type_div #three_month_but_div").css("color", "#477A8F");
             $("#pie_search_type_div #three_month_but_div").css("border-bottom", "#497DD0 solid 1px");
+            days=-90;
         }
 
-        let startDate=this.getAddDate(-90);
-        let endDate=this.getTodayDate();
-        this.getTodayDate();
+        startDate=this.getAddDate(days);
+        //let endDate=this.getTodayDate();
+        let endDate=this.getAddDate(1);
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
@@ -416,10 +422,11 @@ class TestDataTj extends Component{
         let entities=res.entities;
         let bjqySelectList=this.state.bjqySelectList;
         let pieSeriesDataList=[];
+        //console.log("饼状图数据entities==="+JSON.stringify(entities))
         entities.map((item,index)=> {
             bjqySelectList.map((bjqylItem,bjqylIndex)=>{
                 let cellMap = item.cellMap;
-                console.log("===+++"+JSON.stringify(cellMap))
+                //console.log("===+++"+JSON.stringify(cellMap))
                 if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.报警围栏]){
                     let bjlxList=[];
                     this.state.barLegendData.map((bjlxItem,bjlxIndex)=>{
@@ -436,10 +443,13 @@ class TestDataTj extends Component{
                         else if(数据库报警类型.静止报警==数报警类型)
                             手报警类型=手机端报警类型.静止报警;
 
-                        bjlxList.push({name:手报警类型,count:cellMap[this.state.数量]});
+                        console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem["默认字段组"]["名称"])
+                        if(bjlxItem==手报警类型){
+                            bjlxList.push({name:手报警类型,count:cellMap[this.state.数量]});
+                        }
                     });
                     //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
-                    pieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["名称"],bjlxList:bjlxList, selected: true});
+                    pieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["名称"],bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
                 }
                 //if(item["围栏名称"]==)
             });
@@ -603,7 +613,7 @@ class TestDataTj extends Component{
                     /*
                     data: [
                         {value: 1548,name: '一车间',name1:'aaa', selected: true},
-                        {value: 535, name: '荆州'},
+                        {value: 535, name: '二车间'},
                         {value: 510, name: '兖州', selected: true},
                         {value: 634, name: '益州'},
                         {value: 735, name: '西凉', selected: true}
