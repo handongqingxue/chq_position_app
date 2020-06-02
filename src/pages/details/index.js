@@ -108,6 +108,7 @@ class Details extends Component {
 	}	
 	loadData=(dtmplGroup,menuTitle)=>{
 		const {menuId,code,fieldGroupId}=this.state
+		console.log("code==="+code)
 		if(code){
 			Super.super({
 				url:`api2/entity/${menuId}/detail/${code}`,
@@ -116,6 +117,7 @@ class Details extends Component {
 					fieldGroupId
 				}       
 			}).then((resi)=>{
+				console.log("resi==="+JSON.stringify(resi))
 				const fieldMap=Units.forPic(resi.entity.fieldMap)  
 				const arrayMap=resi.entity.arrayMap
 				const dataTitle=resi.entity.title
@@ -237,16 +239,18 @@ class Details extends Component {
 				const optionsMap=res.optionsMap
 				for(let k in optionsMap){
 
+					console.log("k==="+k)
 					if(optionsMap[k]!=null){
 						optionsMap[k].forEach((item)=>{
 							
 							item.label=item.title
 
-				})
+						})
 					}
-					
+
 					
 				}
+				//console.log("optionsMap-res==="+JSON.stringify(res))
 				this.setState({
 					optionsMap,
 					scrollIds,
@@ -336,6 +340,7 @@ class Details extends Component {
 		const {code,menuId,dtmplGroup,fieldGroupId}=this.state
 		this.setState({animating: true});
 		this.props.form.validateFields({force: true}, (err, values) => { // 提交再次验证
+			console.log("validateFields==="+JSON.stringify(values))
 			if(!err){
 				dtmplGroup.forEach((item)=>{
 					if(item.composite){

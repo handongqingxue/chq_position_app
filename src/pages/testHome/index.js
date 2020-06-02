@@ -118,7 +118,7 @@ class TestHome extends Component{
                         <img src={dzxjImg}/>
                         <div className="text_div">电子巡检</div>
                     </div>
-                    <div className="item_div dwpz_div">
+                    <div className="item_div dwpz_div" onClick={this.goPage.bind(this,'testFixedSet')}>
                         <img src={dwpzImg}/>
                         <div className="text_div">定位配置</div>
                     </div>
