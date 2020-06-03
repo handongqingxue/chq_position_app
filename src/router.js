@@ -19,6 +19,7 @@ export default class Router extends React.Component {
                 <App>                  
                     <Switch>                  
                         <Route path="/login"  component={Login}/>
+                        <Route path="/test" component={Test}/>
                         <Route path='/' render={()=>
                             <Switch>
                                 <Route path='/test' component={Test}/>
@@ -31,7 +32,7 @@ export default class Router extends React.Component {
                                 <Route path="/:menuId" component={ActTable} exact />
                                 <Route path='/create/:menuId' component={Details} exact/>
                                 <Route path="/:menuId/:code" component={Details} exact />
-                                <Redirect to="/login" />
+                                <Redirect to="/test" />
                             </Switch>
                         }/>
                     </Switch>

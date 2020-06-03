@@ -53,6 +53,15 @@ class TestFixedSet extends Component{
             }
         });
     }
+    submit=()=>{
+        Super.super({
+            url:`api2/entity/${this.state.menuId}/detail/normal`,
+            method:'POST',
+            data:{'唯一编码':'99156204279701516','人员静止报警阈值':'1112'}
+        }).then((res)=>{
+            console.log(JSON.stringify(res))
+        })
+    }
     render() {
         const {groupsList,selectList,fieldItemList}=this.state
         let {itemDiv,itemFields,fieldDiv}=this.state
@@ -92,6 +101,7 @@ class TestFixedSet extends Component{
                     })
                 }
             </div>
+            <div onClick={this.submit.bind(this)}>保存</div>
         </div>;
     }
 }

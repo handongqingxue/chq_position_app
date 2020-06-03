@@ -375,10 +375,10 @@ class Details extends Component {
 						delete values[k]
 					}
 				}
-				console.log("values==="+JSON.stringify(values))
-				const formData = new FormData(); 
+				const formData = new FormData();
 				formData.append('唯一编码', code?code:"");
 				for(let k in values) {
+					console.log("k==="+k+",value==="+values[k])
 					formData.append(k, values[k]);
 				}
 				let url
