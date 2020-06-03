@@ -17,9 +17,8 @@ export default class Router extends React.Component {
 		return(
 			<HashRouter>
                 <App>                  
-                    <Switch>                  
+                    <Switch>
                         <Route path="/login"  component={Login}/>
-                        <Route path="/test" component={Test}/>
                         <Route path='/' render={()=>
                             <Switch>
                                 <Route path='/test' component={Test}/>

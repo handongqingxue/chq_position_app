@@ -3,6 +3,7 @@ import React, {Component} from "react";
 import "./index.less";
 import Super from "../../super";
 import $ from "jquery";
+import {Toast} from "antd-mobile";
 
 class TestFixedSet extends Component{
     state={menuId:96653404938261,code:"99156204279701516",groupsList:[],selectList:[],fieldItemList:[]}
@@ -57,23 +58,37 @@ class TestFixedSet extends Component{
         });
     }
     submit=()=>{
+        let data={};
+        data['唯一编码']=this.state.code;
         let groupsList=this.state.groupsList;
         groupsList.map((item,index)=>{
             let fields=item.fields;
             fields.map((fieldItem,fieldIndex)=>{
-                if(fieldItem.type=="select")
-                    console.log($("#field_item_select"+fieldItem.id).val())
-                else
-                    console.log($("#field_item_input"+fieldItem.id).val())
+                if(fieldItem.type=="select"){
+                    console.log(fieldItem.title+","+$("#field_item_select"+fieldItem.id).val())
+                    data[fieldItem.title]=$("#field_item_select"+fieldItem.id).val();
+                }
+                else{
+                    console.log(fieldItem.title+","+$("#field_item_input"+fieldItem.id).val())
+                    data[fieldItem.title]=$("#field_item_input"+fieldItem.id).val();
+                }
             });
         });
-        return false;
+        console.log(data)
+        //return false;
         Super.super({
             url:`api2/entity/${this.state.menuId}/detail/normal`,
             method:'POST',
-            data:{'唯一编码':this.state.code,'人员静止报警阈值':'1113'}
+            data:data
         }).then((res)=>{
             console.log(JSON.stringify(res))
+            if(res && res.status==="suc") {
+                Toast.success("保存成功！")
+                this.goPage('testHome')
+            }
+            else{
+                Toast.fail("保存失败!")
+            }
         })
     }
     goPage=(value)=>{
@@ -110,7 +125,7 @@ class TestFixedSet extends Component{
                                                         }
                                                     </select>
                                                     :
-                                                    <input id={'field_item_input'+fieldItem.id} value={fieldItemList[fieldItem.id]}></input>
+                                                    <input id={'field_item_input'+fieldItem.id} value={fieldItemList[fieldItem.id]}/>
                                                 }
                                             </div>
                                         </div>
@@ -120,7 +135,7 @@ class TestFixedSet extends Component{
                     })
                 }
             </div>
-            <div className="submitBut_div" onClick={this.submit.bind(this)}>保存</div>
+            <div className="submitBut_div" onClick={this.submit}>保存</div>
         </div>;
     }
 }

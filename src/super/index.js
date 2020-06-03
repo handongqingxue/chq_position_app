@@ -26,7 +26,8 @@ export default class Superagent {
 						resolve(res.body)
 					} else if(res.status === 403) {
 						Toast.info("请求权限不足,可能是token已经超时")
-						window.location.hash = "/login";
+						//window.location.hash = "/login";
+						window.location.hash = "/test";
 					} else if(res.status === 404 || res.status === 504) {
 						Toast.info("服务器未开···")
 					} else if(res.status === 500) {
