@@ -43,9 +43,11 @@ class TestFixedSet extends Component{
                     console.log("selectList=="+JSON.stringify(selectList[key]))
                 }
                 this.setState({selectList:selectList});
+                this.initDetail()
             });
         });
-
+    }
+    initDetail=()=>{
         Super.super({
             url:`api2/entity/${this.state.menuId}/detail/${this.state.code}`,
             method:'GET',
@@ -55,6 +57,22 @@ class TestFixedSet extends Component{
             for(let key in fieldMap){
                 this.state.fieldItemList[key]=fieldMap[key];
             }
+            this.initData()
+        });
+    }
+    initData=()=>{
+        let groupsList=this.state.groupsList;
+        let fieldItemList=this.state.fieldItemList;
+        groupsList.map((item,index)=>{
+            let fields=item.fields;
+            fields.map((fieldItem,fieldIndex)=>{
+                if(fieldItem.type=="select"){
+                    $("#field_item_select"+fieldItem.id+" option[value='"+fieldItemList[fieldItem.id]+"']").attr("selected",true)
+                }
+                else {
+                    $("#field_item_input"+fieldItem.id).val(fieldItemList[fieldItem.id])
+                }
+            });
         });
     }
     submit=()=>{
@@ -66,7 +84,7 @@ class TestFixedSet extends Component{
             fields.map((fieldItem,fieldIndex)=>{
                 if(fieldItem.type=="select"){
                     console.log(fieldItem.title+","+$("#field_item_select"+fieldItem.id).val())
-                    data[fieldItem.title]=$("#field_item_select"+fieldItem.id).val();
+                    //data[fieldItem.title]=$("#field_item_select"+fieldItem.id).val();
                 }
                 else{
                     console.log(fieldItem.title+","+$("#field_item_input"+fieldItem.id).val())
@@ -125,7 +143,7 @@ class TestFixedSet extends Component{
                                                         }
                                                     </select>
                                                     :
-                                                    <input id={'field_item_input'+fieldItem.id} value={fieldItemList[fieldItem.id]}/>
+                                                    <input id={'field_item_input'+fieldItem.id}/>
                                                 }
                                             </div>
                                         </div>
