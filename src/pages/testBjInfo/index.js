@@ -12,7 +12,18 @@ import alert from "antd-mobile/lib/modal/alert";
 
 class TestBjInfo extends Component{
     state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[],
-    实体名称:208,处理状态:209,围栏名称:204,报警类型:210,报警时间:206,bjDetailTitle:"",bjDetailContent:"",bjDetailCode:""}
+        columnsId:{},
+        实体名称字段:"实体名称",
+        处理状态字段:"处理状态",
+        围栏名称字段:"围栏名称",
+        报警类型字段:"报警类型",
+        报警时间字段:"报警时间",
+        // 实体名称:208,
+        // 处理状态:209,
+        // 围栏名称:204,
+        // 报警类型:210,
+        // 报警时间:206,
+        bjDetailTitle:"",bjDetailContent:"",bjDetailCode:""}
 
     componentDidMount(){
         $("html").css("background-color","#fff");
@@ -20,6 +31,15 @@ class TestBjInfo extends Component{
     }
     request=()=>{
         this.initListByMenuId(false);
+    }
+    initColumnsId=(resColumns)=>{
+        let columnsId={};
+        resColumns.map((item,index)=>{
+            //console.log(item.title+","+item.id)
+            columnsId[item.title]=item.id;
+        });
+        console.log(columnsId)
+        this.setState({columnsId:columnsId});
     }
     initListByMenuId=(reload)=>{
         let quyu=$("#quyu_select").val();
@@ -52,6 +72,7 @@ class TestBjInfo extends Component{
                 let bjlxId=this.state.selectIds.bjlxId;
                 let bjlxFieldId=this.state.fieldIds.bjlxFieldId;
                 this.initSelect(bjlxId,bjlxFieldId);
+                this.initColumnsId(res.ltmpl.columns);
             }
             this.initListByQueryKey(res.queryKey);
         })
@@ -99,24 +120,24 @@ class TestBjInfo extends Component{
         //console.log(cellMap);
         if(show==1){
             this.state.bjDetailCode=code;
-            this.setState({bjDetailTitle:cellMap[this.state.报警类型]});
+            this.setState({bjDetailTitle:cellMap[this.state.columnsId[this.state.报警类型字段]]});
             let content="";
-            if(cellMap[this.state.报警类型].indexOf("车间超员")!=-1)
-                content=this.substringItemName(cellMap[this.state.围栏名称])+"于"+cellMap[this.state.报警时间]+"超员"+cellMap[this.state.处理状态];
-            else if(cellMap[this.state.报警类型].indexOf("车间缺员")!=-1)
-                content=this.substringItemName(cellMap[this.state.围栏名称])+"于"+cellMap[this.state.报警时间]+"缺员"+cellMap[this.state.处理状态];
-            else if(cellMap[this.state.报警类型].indexOf("人员串岗")!=-1)
-                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"串岗"+cellMap[this.state.处理状态];
-            else if(cellMap[this.state.报警类型].indexOf("人员滞留")!=-1)
-                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"滞留"+cellMap[this.state.处理状态];
-            else if(cellMap[this.state.报警类型].indexOf("人员一键紧急")!=-1)
-                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"紧急报警"+cellMap[this.state.处理状态];
-            else if(cellMap[this.state.报警类型].indexOf("人员长时间静止")!=-1)
-                content=this.substringItemName(cellMap[this.state.围栏名称])+this.substringItemName(cellMap[this.state.实体名称])+"于"+cellMap[this.state.报警时间]+"长时间静止"+cellMap[this.state.处理状态];
+            if(cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("车间超员")!=-1)
+                content=this.substringItemName(cellMap[this.state.columnsId[this.state.围栏名称字段]])+"于"+cellMap[this.state.columnsId[this.state.报警时间字段]]+"超员"+cellMap[this.state.columnsId[this.state.处理状态字段]];
+            else if(cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("车间缺员")!=-1)
+                content=this.substringItemName(cellMap[this.state.columnsId[this.state.围栏名称字段]])+"于"+cellMap[this.state.columnsId[this.state.报警时间字段]]+"缺员"+cellMap[this.state.columnsId[this.state.处理状态字段]];
+            else if(cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("人员串岗")!=-1)
+                content=this.substringItemName(cellMap[this.state.columnsId[this.state.围栏名称字段]])+this.substringItemName(cellMap[this.state.columnsId[this.state.实体名称字段]])+"于"+cellMap[this.state.columnsId[this.state.报警时间字段]]+"串岗"+cellMap[this.state.columnsId[this.state.处理状态字段]];
+            else if(cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("人员滞留")!=-1)
+                content=this.substringItemName(cellMap[this.state.columnsId[this.state.围栏名称字段]])+this.substringItemName(cellMap[this.state.columnsId[this.state.实体名称字段]])+"于"+cellMap[this.state.columnsId[this.state.报警时间字段]]+"滞留"+cellMap[this.state.columnsId[this.state.处理状态字段]];
+            else if(cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("人员一键紧急")!=-1)
+                content=this.substringItemName(cellMap[this.state.columnsId[this.state.围栏名称字段]])+this.substringItemName(cellMap[this.state.columnsId[this.state.实体名称字段]])+"于"+cellMap[this.state.columnsId[this.state.报警时间字段]]+"紧急报警"+cellMap[this.state.columnsId[this.state.处理状态字段]];
+            else if(cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("人员长时间静止")!=-1)
+                content=this.substringItemName(cellMap[this.state.columnsId[this.state.围栏名称字段]])+this.substringItemName(cellMap[this.state.columnsId[this.state.实体名称字段]])+"于"+cellMap[this.state.columnsId[this.state.报警时间字段]]+"长时间静止"+cellMap[this.state.columnsId[this.state.处理状态字段]];
             this.setState({bjDetailContent:content});
 
-            if(cellMap[this.state.报警类型].indexOf("车间超员")!=-1||cellMap[this.state.报警类型].indexOf("车间缺员")!=-1||
-                cellMap[this.state.报警类型].indexOf("人员串岗")!=-1||cellMap[this.state.报警类型].indexOf("人员滞留")!=-1)
+            if(cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("车间超员")!=-1||cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("车间缺员")!=-1||
+                cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("人员串岗")!=-1||cellMap[this.state.columnsId[this.state.报警类型字段]].indexOf("人员滞留")!=-1)
                 $("#bj_detail_dialog_div #confirm_but_div").text("确认报警");
             else
                 $("#bj_detail_dialog_div #confirm_but_div").text("报警已处理");
@@ -173,7 +194,9 @@ class TestBjInfo extends Component{
     }
 
     render(){
-        const {bjqySelectList,bjlxSelectList,bjList,实体名称,围栏名称,报警类型,报警时间,bjDetailTitle,bjDetailContent}=this.state
+        const {bjqySelectList,bjlxSelectList,bjList,columnsId,
+            实体名称字段,围栏名称字段,报警类型字段,报警时间字段,
+            bjDetailTitle,bjDetailContent}=this.state
         return <div className="bjInfoPage_div">
             <div className="bj_detail_dialog_div" id="bj_detail_dialog_div">
                 <div className="main_div">
@@ -209,24 +232,24 @@ class TestBjInfo extends Component{
                     bjList?bjList.map((item,index)=>
                         <div className="item_div" onClick={this.showBjDetailDialogDiv.bind(this,item.cellMap,item.code,1)}>
                             <img className="logo_img" src={
-                                item.cellMap[报警类型].indexOf("车间超员")!=-1||item.cellMap[报警类型].indexOf("车间缺员")!=-1 ? cjcyImg :
-                                    item.cellMap[报警类型].indexOf("人员串岗")!=-1||item.cellMap[报警类型].indexOf("人员滞留")!=-1?rycgImg:
-                                        item.cellMap[报警类型].indexOf("人员一键紧急")!=-1?ryyjjjImg:
-                                            item.cellMap[报警类型].indexOf("人员长时间静止")!=-1?rycsjjzImg:""
+                                item.cellMap[columnsId[报警类型字段]].indexOf("车间超员")!=-1||item.cellMap[columnsId[报警类型字段]].indexOf("车间缺员")!=-1 ? cjcyImg :
+                                    item.cellMap[columnsId[报警类型字段]].indexOf("人员串岗")!=-1||item.cellMap[columnsId[报警类型字段]].indexOf("人员滞留")!=-1?rycgImg:
+                                        item.cellMap[columnsId[报警类型字段]].indexOf("人员一键紧急")!=-1?ryyjjjImg:
+                                            item.cellMap[columnsId[报警类型字段]].indexOf("人员长时间静止")!=-1?rycsjjzImg:""
                             }/>
-                            <div className="bjlx_div">{item.cellMap[192]}</div>
+                            <div className="bjlx_div">{item.cellMap[columnsId[报警类型字段]]}</div>
                             <div className="bjnr_div">
                                 {
-                                    item.cellMap[报警类型].indexOf("车间超员")!=-1?this.substringItemName(item.cellMap[围栏名称])+"超员":
-                                        item.cellMap[报警类型].indexOf("车间缺员")!=-1?this.substringItemName(item.cellMap[围栏名称])+"缺员":
-                                            item.cellMap[报警类型].indexOf("人员串岗")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"串岗":
-                                                item.cellMap[报警类型].indexOf("人员滞留")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"滞留":
-                                                    item.cellMap[报警类型].indexOf("人员一键紧急")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"紧急报警":
-                                                        item.cellMap[报警类型].indexOf("人员长时间静止")!=-1?this.substringItemName(item.cellMap[围栏名称])+this.substringItemName(item.cellMap[实体名称])+"长时间静止":
-                                                            item.cellMap[围栏名称]+item.cellMap[实体名称]
+                                    item.cellMap[columnsId[报警类型字段]].indexOf("车间超员")!=-1?this.substringItemName(item.cellMap[columnsId[围栏名称字段]])+"超员":
+                                        item.cellMap[columnsId[报警类型字段]].indexOf("车间缺员")!=-1?this.substringItemName(item.cellMap[columnsId[围栏名称字段]])+"缺员":
+                                            item.cellMap[columnsId[报警类型字段]].indexOf("人员串岗")!=-1?this.substringItemName(item.cellMap[columnsId[围栏名称字段]])+this.substringItemName(item.cellMap[columnsId[实体名称字段]])+"串岗":
+                                                item.cellMap[columnsId[报警类型字段]].indexOf("人员滞留")!=-1?this.substringItemName(item.cellMap[columnsId[围栏名称字段]])+this.substringItemName(item.cellMap[columnsId[实体名称字段]])+"滞留":
+                                                    item.cellMap[columnsId[报警类型字段]].indexOf("人员一键紧急")!=-1?this.substringItemName(item.cellMap[columnsId[围栏名称字段]])+this.substringItemName(item.cellMap[columnsId[实体名称字段]])+"紧急报警":
+                                                        item.cellMap[columnsId[报警类型字段]].indexOf("人员长时间静止")!=-1?this.substringItemName(item.cellMap[columnsId[围栏名称字段]])+this.substringItemName(item.cellMap[columnsId[实体名称字段]])+"长时间静止":
+                                                            item.cellMap[columnsId[围栏名称字段]]+item.cellMap[columnsId[实体名称字段]]
                                 }
                             </div>
-                            <div className="bjsj_div">{item.cellMap[报警时间]}</div>
+                            <div className="bjsj_div">{item.cellMap[columnsId[报警时间字段]]}</div>
                         </div>
                     ):<div>暂无数据</div>
                 }
