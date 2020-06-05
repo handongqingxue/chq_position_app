@@ -259,18 +259,18 @@ export default class ActTable extends Component {
 		let actPop
 		if(isStat){
 			actPop = [
-				(<Itempop key="5" value="home" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
+				(<Itempop key="5" value="testHome" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
 				(<Itempop key="1" value="user" icon={<span className="iconfont">&#xe74c;</span>}>用户</Itempop>),
 				(<Itempop key="3" value="search" icon={<span className="iconfont">&#xe72f;</span>}>筛选</Itempop>),
-				(<Itempop key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
+				(<Itempop key="2" value="testLogin" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
 			]
 		}else{
 			actPop = [
-				(<Itempop key="5" value="home" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
+				(<Itempop key="5" value="testHome" icon={<span className="iconfont">&#xe62f;</span>}>首页</Itempop>),
 				(<Itempop key="1" value="user" icon={<span className="iconfont">&#xe74c;</span>}>用户</Itempop>),
 				(<Itempop key="3" value="search" icon={<span className="iconfont">&#xe72f;</span>}>筛选</Itempop>),
 				(<Itempop key="4" value="create" icon={<span className="iconfont">&#xe60a;</span>}>创建</Itempop>),
-				(<Itempop key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
+				(<Itempop key="2" value="testLogin" icon={<span className="iconfont">&#xe739;</span>}>退出</Itempop>),
 			]
 		}
 		const sidebar = (<SearchForm 

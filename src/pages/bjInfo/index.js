@@ -10,7 +10,7 @@ import $ from "jquery";
 import {Toast} from "antd-mobile";
 import alert from "antd-mobile/lib/modal/alert";
 
-class TestBjInfo extends Component{
+class BjInfo extends Component{
     state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[],
         columnsId:{},
         实体名称字段:"实体名称",
@@ -207,7 +207,7 @@ class TestBjInfo extends Component{
                 </div>
             </div>
             <div className="top_div">报警信息</div>
-            <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
+            <div className="back_but_div" onClick={this.goPage.bind(this,'home')}>&lt;返回</div>
             <div className="where_search_div">
                 <select className="quyu_select" id="quyu_select" onChange={this.initListByMenuId.bind(this,true)}>
                     <option value="">区域</option>
@@ -266,4 +266,4 @@ class TestBjInfo extends Component{
     }
 }
 
-export default withRouter(TestBjInfo)
+export default withRouter(BjInfo)

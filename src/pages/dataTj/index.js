@@ -10,7 +10,7 @@ import Super from "../../super";
 import * as moment from "moment";
 import Text from "antd-mobile/es/text";
 
-class TestDataTj extends Component{
+class DataTj extends Component{
     state={menuId:17,barLegendData:[],pieLegendData:[],xAxisData:[],series:[],barSearchFlag:"",pieSearchFlag:"",barReload:false,pieReload:false,
         barQueryKey:"",pieQueryKey:"",barStartDate:"",barEndDate:"",
         columnsId:{},
@@ -694,9 +694,9 @@ class TestDataTj extends Component{
     render() {
         const {日查询常量,周查询常量,月查询常量,三个月查询常量,barLegendData,todayBjCountList}=this.state
         let {itemDiv}=this.state
-        return <div className="bjInfoPage_div">
+        return <div className="dataTjPage_div">
             <div className="top_div">报警统计</div>
-            <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
+            <div className="back_but_div" onClick={this.goPage.bind(this,'home')}>&lt;返回</div>
             <div>
                 <div className="jrbjtjsl_div">
                     <div className="jrbjsl_tit_div">今日报警</div>
@@ -780,4 +780,4 @@ class TestDataTj extends Component{
     }
 }
 
-export default withRouter(TestDataTj)
+export default withRouter(DataTj)

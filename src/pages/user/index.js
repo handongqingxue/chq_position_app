@@ -38,9 +38,9 @@ export default class User extends Component {
 	}
 	render() {
 		const userPop = [ //右边导航下拉
-			(<Item key="1" value="home" icon={<span className="iconfont">&#xe74c;</span>}>首页</Item>),
+			(<Item key="1" value="testHome" icon={<span className="iconfont">&#xe74c;</span>}>首页</Item>),
 			(<Item key="3" value="save" icon={ <span className="iconfont" > &#xe61a; </span>}>保存</Item> ),
-			(<Item key="2" value="login" icon={<span className="iconfont">&#xe739;</span>}>退出</Item>),
+			(<Item key="2" value="testLogin" icon={<span className="iconfont">&#xe739;</span>}>退出</Item>),
 		]
 		const {userName,code}=this.state
 		return(

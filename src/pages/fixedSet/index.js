@@ -5,7 +5,7 @@ import Super from "../../super";
 import $ from "jquery";
 import {Toast} from "antd-mobile";
 
-class TestFixedSet extends Component{
+class FixedSet extends Component{
     state={menuId:96653404938261,code:"99156204279701516",groupsList:[],selectList:[],fieldItemList:[]}
 
     componentDidMount(){
@@ -84,7 +84,7 @@ class TestFixedSet extends Component{
             fields.map((fieldItem,fieldIndex)=>{
                 if(fieldItem.type=="select"){
                     console.log(fieldItem.title+","+$("#field_item_select"+fieldItem.id).val())
-                    //data[fieldItem.title]=$("#field_item_select"+fieldItem.id).val();
+                    data[fieldItem.title]=$("#field_item_select"+fieldItem.id).val();
                 }
                 else{
                     console.log(fieldItem.title+","+$("#field_item_input"+fieldItem.id).val())
@@ -102,7 +102,7 @@ class TestFixedSet extends Component{
             console.log(JSON.stringify(res))
             if(res && res.status==="suc") {
                 Toast.success("保存成功！")
-                this.goPage('testHome')
+                this.goPage('home')
             }
             else{
                 Toast.fail("保存失败!")
@@ -117,7 +117,7 @@ class TestFixedSet extends Component{
         let {itemDiv,itemFields,fieldDiv}=this.state
         return <div className="fsPage_div">
             <div className="top_div">定位配置</div>
-            <div className="back_but_div" onClick={this.goPage.bind(this,'testHome')}>&lt;返回</div>
+            <div className="back_but_div" onClick={this.goPage.bind(this,'home')}>&lt;返回</div>
             <div className="groups_list_div">
                 {
                     groupsList.map((item,index)=>{
@@ -158,4 +158,4 @@ class TestFixedSet extends Component{
     }
 }
 
-export default withRouter(TestFixedSet)
+export default withRouter(FixedSet)
