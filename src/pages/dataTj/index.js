@@ -101,7 +101,7 @@ class DataTj extends Component{
             query:{disabledColIds:disabledColIds,sortColIds:(68+"_ASC"),criteria_13:this.state.barStartDate+"~"+this.state.barEndDate}
         }).then((res) => {
             console.log(res);
-            //console.log("柱状图数据==="+JSON.stringify(res));
+            console.log("柱状图数据==="+JSON.stringify(res));
             this.state.barQueryKey=res.queryKey;
             if(!this.state.barReload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
                 res.ltmpl.criterias.map((item,index)=>{
@@ -294,11 +294,11 @@ class DataTj extends Component{
             method:'GET',
             query: {fieldIds:fieldId,pageSize:this.state.pageSize}
         }).then((res) => {
-            console.log("elefence==="+JSON.stringify(res.result.entities.length))
+            console.log("elefence==="+JSON.stringify(res.result.entities))
             let pieLegendData=[];
             this.state.bjqySelectList=res.result.entities;
             this.state.bjqySelectList.map((item,index)=>{
-                pieLegendData.push(item["默认字段组"]["名称"]);
+                pieLegendData.push(item["默认字段组"]["围栏编码"]+"@R@"+item["默认字段组"]["名称"]);
             });
 
             this.setState({pieLegendData:pieLegendData});
@@ -485,7 +485,7 @@ class DataTj extends Component{
         entities.map((item,index)=> {
             bjqySelectList.map((bjqylItem,bjqylIndex)=>{
                 let cellMap = item.cellMap;
-                //console.log("===+++"+JSON.stringify(cellMap))
+                console.log("===+++"+JSON.stringify(cellMap))
                 if(this.state.pieSearchFlag==this.state.日查询常量){
                     console.log(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.drssbjColumnsId[this.state.电子围栏字段]])
                     if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.drssbjColumnsId[this.state.电子围栏字段]]){
@@ -510,13 +510,29 @@ class DataTj extends Component{
                             }
                         });
                         //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
-                        pieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["名称"],bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
+                        pieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["围栏编码"]+"@R@"+bjqylItem["默认字段组"]["名称"],bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
                     }
                 }
                 else{
-                    console.log("+++2---"+(bjqylItem["默认字段组"]["围栏编码"]==this.substringItemValue(cellMap[this.state.bjtjColumnsId[this.state.报警围栏字段]],0)))
+                    console.log("+++2---"+(bjqylItem["默认字段组"]["围栏编码"]+","+this.substringItemValue(cellMap[this.state.bjtjColumnsId[this.state.报警围栏字段]],0)))
                     if(bjqylItem["默认字段组"]["围栏编码"]==this.substringItemValue(cellMap[this.state.bjtjColumnsId[this.state.报警围栏字段]],0)){
-                        let bjlxList=[];
+                        let bjqyValue;
+                        let bjqy=bjqylItem["默认字段组"]["围栏编码"]+"@R@"+bjqylItem["默认字段组"]["名称"];
+                        let bjlxList;
+                        let exist=this.checkBjqyExistInPSDList(pieSeriesDataList,bjqy)
+                        if(exist){
+                            pieSeriesDataList.map((psdItem,psdIndex)=>{
+                                if(psdItem.name==bjqy){
+                                    bjqyValue=psdItem.value;
+                                    bjlxList=psdItem.bjlxList;
+                                    return true;
+                                }
+                            });
+                        }
+                        else{
+                            bjqyValue=0;
+                            bjlxList=[];
+                        }
                         this.state.barLegendData.map((bjlxItem,bjlxIndex)=>{
                             let 数据库报警类型=this.state.报警类型数据库里名称;
                             let 手机端报警类型=this.state.报警类型手机端显示名称;
@@ -533,17 +549,39 @@ class DataTj extends Component{
 
                             console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem["默认字段组"]["名称"])
                             if(bjlxItem==手报警类型){
-                                bjlxList.push({name:手报警类型,count:cellMap[this.state.bjtjColumnsId[this.state.数量字段]]});
+                                let count=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
+                                bjqyValue+=count;
+                                bjlxList.push({name:手报警类型,count:count});
                             }
                         });
                         //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
-                        pieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["名称"],bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
+                        if(exist){
+                            pieSeriesDataList.map((psdItem,psdIndex)=>{
+                                if(psdItem.name==bjqy){
+                                    psdItem.value=bjqyValue;
+                                    return true;
+                                }
+                            });
+                        }
+                        else{
+                            pieSeriesDataList.push({value: bjqyValue,name: bjqy,bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
+                        }
                     }
                 }
             });
         });
         this.setState({pieSeriesDataList:pieSeriesDataList});
         console.log(JSON.stringify(pieSeriesDataList))
+    }
+    checkBjqyExistInPSDList=(list,bjqy)=>{
+        let flag=false;
+        list.map((item,index)=>{
+            if(item.name==bjqy){
+                flag=true;
+                return flag;
+            }
+        });
+        return flag;
     }
     checkBarXAxisDataExist=(xAxisData,xData)=>{
         let exist=false;
@@ -672,7 +710,7 @@ class DataTj extends Component{
                 formatter:function (json) {
                     console.log("json==="+JSON.stringify(json)+","+JSON.stringify(json["data"]["bjlxList"]))
                     let html="";
-                    html+=json["data"]["name"]+":"+json["data"]["value"]
+                    html+=json["data"]["name"].split("@R@")[1]+":"+json["data"]["value"]
                     let bjlxList=json["data"]["bjlxList"];
                     bjlxList.map((item,index)=>{
                         html+="<br/>"+item.name+":"+item.count
@@ -685,7 +723,10 @@ class DataTj extends Component{
                 // top: 'middle',
                 bottom: 10,
                 left: 'center',
-                data: this.state.pieLegendData
+                data: this.state.pieLegendData,
+                formatter:function(json){
+                    return json.split("@R@")[1]
+                }
             },
             series: [
                 {
