@@ -50,19 +50,27 @@ class DataTj extends Component{
         this.request();
     }
     request=()=>{
-        this.initBarListByMenuId(this.state.日查询常量,false);
-        this.initPieListByMenuId(this.state.日查询常量,false);
-
-        this.initZHBarListByMenuId(this.state.日查询常量,false);
+        this.initBjtjColumnsId();
     }
-    initBjtjColumnsId=(resColumns)=>{
-        let bjtjColumnsId={};
-        resColumns.map((item,index)=>{
-            //console.log(item.title+","+item.id)
-            bjtjColumnsId[item.title]=item.id;
+    initBjtjColumnsId=()=>{
+        Super.super({
+            url:`api2/entity/${this.state.menuId}/list/tmpl`,
+            method:'GET',
+        }).then((res) => {
+            let bjtjColumnsId = {};
+            let resColumns=res.ltmpl.columns;
+            resColumns.map((item, index) => {
+                //console.log(item.title+","+item.id)
+                bjtjColumnsId[item.title] = item.id;
+            });
+            //console.log(bjtjColumnsId)
+            this.setState({bjtjColumnsId: bjtjColumnsId});
+
+            this.initBarListByMenuId(this.state.日查询常量,false);
+            this.initPieListByMenuId(this.state.日查询常量,false);
+
+            this.initZHBarListByMenuId(this.state.日查询常量,false);
         });
-        //console.log(bjtjColumnsId)
-        this.setState({bjtjColumnsId:bjtjColumnsId});
     }
     initDrssbjColumnsId=(resColumns)=>{
         let drssbjColumnsId={};
@@ -106,7 +114,7 @@ class DataTj extends Component{
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{disabledColIds:disabledColIds,sortColIds:(68+"_ASC"),criteria_13:this.state.barStartDate+"~"+this.state.barEndDate}
+            query:{disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_13:this.state.barStartDate+"~"+this.state.barEndDate}
         }).then((res) => {
             console.log(res);
             console.log("柱状图数据==="+JSON.stringify(res));
@@ -117,7 +125,6 @@ class DataTj extends Component{
                         this.initBarlegendData(item.fieldId);
                     }
                 });
-                this.initBjtjColumnsId(res.ltmpl.columns);
             }
             else
                 this.initBarListByQueryKey();
@@ -133,7 +140,7 @@ class DataTj extends Component{
             $("#zhBar_search_type_div #date_but_div").css("color","#477A8F");
             $("#zhBar_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
 
-            disabledColIds="97596655673346";
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段];
             this.state.综合X轴字号=10;
             this.state.zhAlignWithLabel=true;
         }
@@ -141,7 +148,7 @@ class DataTj extends Component{
             $("#zhBar_search_type_div #week_but_div").css("color","#477A8F");
             $("#zhBar_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
 
-            disabledColIds=this.state.bjtjColumnsId[this.state.日字段];//这里是第一次加载完之后的数据
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段];
             this.state.综合X轴字号=9;
             this.state.zhAlignWithLabel=false;
         }
@@ -149,14 +156,15 @@ class DataTj extends Component{
             $("#zhBar_search_type_div #month_but_div").css("color","#477A8F");
             $("#zhBar_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
 
-            disabledColIds=this.state.bjtjColumnsId[this.state.日字段]+","+this.state.bjtjColumnsId[this.state.月度周字段];
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段]+","+this.state.bjtjColumnsId[this.state.月度周字段];
             this.state.综合X轴字号=9;
             this.state.zhAlignWithLabel=true;
         }
+
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{disabledColIds:disabledColIds,sortColIds:(68+"_ASC"),criteria_13:this.state.zhBarStartDate+"~"+this.state.zhBarEndDate}
+            query:{disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_13:this.state.zhBarStartDate+"~"+this.state.zhBarEndDate}
         }).then((res) => {
             console.log(res);
             console.log("综合柱状图数据==="+JSON.stringify(res));
@@ -1152,9 +1160,9 @@ class DataTj extends Component{
             <div className="zhbjtj_content_div" id="zhbjtj_content_div">
                 <div className="zhBar_search_type_div" id="zhBar_search_type_div">
                     <div className="but_div" id="but_div">
-                        <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initBarListByMenuId(日查询常量,true)}>日</div>
-                        <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initBarListByMenuId(周查询常量,true)}>周</div>
-                        <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initBarListByMenuId(月查询常量,true)}>月</div>
+                        <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initZHBarListByMenuId(日查询常量,true)}>日</div>
+                        <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initZHBarListByMenuId(周查询常量,true)}>周</div>
+                        <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initZHBarListByMenuId(月查询常量,true)}>月</div>
                     </div>
                 </div>
                 <div className="zhBar_div">
