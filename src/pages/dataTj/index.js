@@ -1331,6 +1331,18 @@ class DataTj extends Component{
         else
             return ""
     }
+    showQyzn1SelectBgDiv=(flag)=>{
+        if(flag==1){
+            $("#qyzn1_select_bg_div").css("display","block");
+        }
+        else{
+            $("#qyzn1_select_bg_div").css("display","none");
+        }
+    }
+    changeQyzn1=(qyzn1)=>{
+        $("#qyzn1_but_div").text(qyzn1);
+        this.showQyzn1SelectBgDiv(0);
+    }
     goPage=(value)=>{
         this.props.history.push(`/${value}`);
     }
@@ -1339,6 +1351,16 @@ class DataTj extends Component{
         const {日查询常量,周查询常量,月查询常量,三个月查询常量,barLegendData,todayBjCountList}=this.state
         let {itemDiv}=this.state
         return <div className="dataTjPage_div">
+            <div className="qyzn1_select_bg_div" id="qyzn1_select_bg_div">
+                <div className="qyzn1_select_div">
+                    <div className="title_div">区域职能1</div>
+                    <span className="close_span" onClick={(e)=>this.showQyzn1SelectBgDiv(0)}>X</span>
+                    <div className="content_div">
+                        <div className="item_div" onClick={(e)=>this.changeQyzn1('厂区1')}>厂区1</div>
+                        <div className="item_div">厂区2</div>
+                    </div>
+                </div>
+            </div>
             <div className="top_div">报警统计</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'home')}>&lt;返回</div>
             <div>
@@ -1433,6 +1455,7 @@ class DataTj extends Component{
                         <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initZHBarListByMenuId(日查询常量,true)}>日</div>
                         <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initZHBarListByMenuId(周查询常量,true)}>周</div>
                         <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initZHBarListByMenuId(月查询常量,true)}>月</div>
+                        <div className="qyzn1_but_div" id="qyzn1_but_div" onClick={(e)=>this.showQyzn1SelectBgDiv(1)}>区域职能1</div>
                     </div>
                 </div>
                 <div className="zhBar_div">
