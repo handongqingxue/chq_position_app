@@ -281,7 +281,7 @@ class DataTj extends Component{
             console.log("综合饼状图数据==="+JSON.stringify(res));
             this.state.zhPieQueryKey=res.queryKey;
             if(!this.state.zhPieReload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
-                this.initZHPielegendData(31265);
+                this.initZHPielegendData(31389);
             }
             else
                 this.initZHPieListByQueryKey();
@@ -518,16 +518,17 @@ class DataTj extends Component{
     }
     initZHPielegendData=(fieldId)=>{
         Super.super({
-            url:`api2/ks/clist/elefence/list/data`,
+            //url:`api2/ks/clist/elefence/list/data`,
+            url:`api2/meta/dict/field_options`,
             method:'GET',
             query: {fieldIds:fieldId,pageSize:this.state.pageSize}
         }).then((res) => {
-            console.log("elefence==="+JSON.stringify(res.result.entities))
+            console.log("111elefence==="+JSON.stringify(res.optionsMap[fieldId]))
             let zhPieLegendData=[];
-            this.state.zhBjqySelectList=res.result.entities;
+            this.state.zhBjqySelectList=res.optionsMap[fieldId];
             this.state.zhBjqySelectList.map((item,index)=>{
-                console.log("????==="+(item["默认字段组"]["围栏编码"]+"@R@"+item["默认字段组"]["区域职能2"]))
-                zhPieLegendData.push(item["默认字段组"]["围栏编码"]+"@R@"+item["默认字段组"]["区域职能2"]);
+                console.log("????==="+(item.value))
+                zhPieLegendData.push(item.value);
             });
 
             this.setState({zhPieLegendData:zhPieLegendData});
@@ -871,7 +872,7 @@ class DataTj extends Component{
                 let cellMap = item.cellMap;
                 console.log("===+++"+JSON.stringify(cellMap))
                 if(this.state.zhPieSearchFlag==this.state.日查询常量){
-                    console.log(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.bjtjColumnsId[this.state.电子围栏字段]])
+                    console.log(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.电子围栏字段]])
                     if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.bjtjColumnsId[this.state.电子围栏字段]]){
                         let bjlxList=[];
                         this.state.zhBarLegendData.map((bjlxItem,bjlxIndex)=>{
@@ -898,10 +899,10 @@ class DataTj extends Component{
                     }
                 }
                 else{
-                    console.log("+++2---"+(JSON.stringify(bjqylItem["默认字段组"]["围栏编码"])+","+this.substringItemValue(cellMap[this.state.bjtjColumnsId[this.state.报警围栏字段]],0)))
-                    if(bjqylItem["默认字段组"]["围栏编码"]==this.substringItemValue(cellMap[this.state.bjtjColumnsId[this.state.报警围栏字段]],0)){
+                    console.log("+++2---"+bjqylItem.value+","+cellMap[this.state.bjtjColumnsId[this.state.区域职能2字段]])
+                    if(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.区域职能2字段]]){
                         let bjqyValue;
-                        let bjqy=bjqylItem["默认字段组"]["围栏编码"]+"@R@"+cellMap[this.state.bjtjColumnsId[this.state.区域职能2字段]];
+                        let bjqy=bjqylItem.value;
                         let bjlxList;
                         let exist=this.checkBjqyExistInPSDList(zhPieSeriesDataList,bjqy)
                         if(exist){
@@ -931,7 +932,6 @@ class DataTj extends Component{
                             else if(数据库报警类型.静止报警==数报警类型)
                                 手报警类型=手机端报警类型.静止报警;
 
-                            console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem["默认字段组"]["名称"])
                             if(bjlxItem==手报警类型){
                                 let count=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
                                 bjqyValue+=count;
@@ -1222,7 +1222,7 @@ class DataTj extends Component{
                 formatter:function (json) {
                     console.log("json==="+JSON.stringify(json)+","+JSON.stringify(json["data"]["bjlxList"]))
                     let html="";
-                    html+=json["data"]["name"].split("@R@")[1]+":"+json["data"]["value"]
+                    html+=json["data"]["name"]+":"+json["data"]["value"]
                     let bjlxList=json["data"]["bjlxList"];
                     bjlxList.map((item,index)=>{
                         html+="<br/>"+item.name+":"+item.count
@@ -1233,10 +1233,7 @@ class DataTj extends Component{
             legend: {
                 bottom: 10,
                 left: 'center',
-                data: this.state.zhPieLegendData,
-                formatter:function(json){
-                    return json.split("@R@")[1]
-                }
+                data: this.state.zhPieLegendData
             },
             series: [
                 {
