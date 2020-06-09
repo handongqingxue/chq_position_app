@@ -18,6 +18,8 @@ class DataTj extends Component{
         zhBarSeriesNameList:[],zhBarSeriesDataList:[],zhBarSeriesColorList:[],zhBjqySelectList:[],zhPieLegendData:[],zhPieSeriesDataList:[],zhPieSearchFlag:"",zhPieReload:false,
         bjtjColumnsId:{},//报警统计字段id
         bjtjColumnsFieldId:{},//报警统计字段fieldId
+        bjtjCriteriasId:{},
+        qyzn1Value:"",
         区域职能1字段:"区域职能1",
         区域职能2字段:"区域职能2",
         所属部门字段:"所属部门",
@@ -50,24 +52,17 @@ class DataTj extends Component{
         this.request();
     }
     request=()=>{
-        this.initBjtjColumnsId();
+        this.initLtmplAttr();
     }
-    initBjtjColumnsId=()=>{
+    initLtmplAttr=()=>{
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
         }).then((res) => {
-            let bjtjColumnsId = {};
-            let bjtjColumnsFieldId = {};
             let resColumns=res.ltmpl.columns;
-            resColumns.map((item, index) => {
-                console.log(item.title+",==="+item.id)
-                bjtjColumnsId[item.title] = item.id;
-                bjtjColumnsFieldId[item.title] = item.fieldId;
-            });
-            //console.log(bjtjColumnsId)
-            this.setState({bjtjColumnsId: bjtjColumnsId});
-            this.setState({bjtjColumnsFieldId: bjtjColumnsFieldId});
+            this.initBjtjColumnsId(resColumns);
+            let resCriterias=res.ltmpl.criterias;
+            this.initCriteriasId(resCriterias);
 
             this.initBarListByMenuId(this.state.日查询常量,false);
             this.initPieListByMenuId(this.state.日查询常量,false);
@@ -75,6 +70,26 @@ class DataTj extends Component{
             this.initZHBarListByMenuId(this.state.日查询常量,false);
             this.initZHPieListByMenuId(this.state.日查询常量,false);
         });
+    }
+    initBjtjColumnsId=(resColumns)=>{
+        let bjtjColumnsId = {};
+        let bjtjColumnsFieldId = {};
+        resColumns.map((item, index) => {
+            console.log(item.title+",==="+item.id)
+            bjtjColumnsId[item.title] = item.id;
+            bjtjColumnsFieldId[item.title] = item.fieldId;
+        });
+        //console.log(bjtjColumnsId)
+        this.setState({bjtjColumnsId: bjtjColumnsId});
+        this.setState({bjtjColumnsFieldId: bjtjColumnsFieldId});
+    }
+    initCriteriasId=(resCriterias)=>{
+        let bjtjCriteriasId={};
+        resCriterias.map((item, index) => {
+            console.log(item.title+",==="+item.id)
+            bjtjCriteriasId[item.title] = item.id;
+        });
+        this.setState({bjtjCriteriasId: bjtjCriteriasId});
     }
     initBarListByMenuId=(flag,reload)=>{
         this.state.barSearchFlag=flag;
@@ -159,7 +174,7 @@ class DataTj extends Component{
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_13:this.state.zhBarStartDate+"~"+this.state.zhBarEndDate}
+            query:{disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_97596655673367:this.state.qyzn1Value,criteria_13:this.state.zhBarStartDate+"~"+this.state.zhBarEndDate}
         }).then((res) => {
             console.log(res);
             console.log("综合柱状图数据==="+JSON.stringify(res));
@@ -1340,6 +1355,7 @@ class DataTj extends Component{
         }
     }
     changeQyzn1=(qyzn1)=>{
+        this.state.qyzn1Value=qyzn1;
         $("#qyzn1_but_div").text(qyzn1);
         this.showQyzn1SelectBgDiv(0);
     }
@@ -1356,7 +1372,7 @@ class DataTj extends Component{
                     <div className="title_div">区域职能1</div>
                     <span className="close_span" onClick={(e)=>this.showQyzn1SelectBgDiv(0)}>X</span>
                     <div className="content_div">
-                        <div className="item_div" onClick={(e)=>this.changeQyzn1('厂区1')}>厂区1</div>
+                        <div className="item_div" onClick={(e)=>this.changeQyzn1('厂区')}>厂区1</div>
                         <div className="item_div">厂区2</div>
                     </div>
                 </div>
