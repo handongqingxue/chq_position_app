@@ -17,6 +17,7 @@ class DataTj extends Component{
         zhBarLegendData:[],zhAlignWithLabel:false,综合X轴字号:"",zhxAxisData:[],zhSeries:[],zhBarSearchFlag:"",zhBarQueryKey:"",zhPieQueryKey:"",zhBarStartDate:"",zhBarEndDate:"", zhBarReload:false,
         zhBarSeriesNameList:[],zhBarSeriesDataList:[],zhBarSeriesColorList:[],zhBjqySelectList:[],zhPieLegendData:[],zhPieSeriesDataList:[],zhPieSearchFlag:"",zhPieReload:false,
         bjtjColumnsId:{},//报警统计字段id
+        bjtjColumnsFieldId:{},//报警统计字段fieldId
         区域职能1字段:"区域职能1",
         区域职能2字段:"区域职能2",
         所属部门字段:"所属部门",
@@ -57,13 +58,16 @@ class DataTj extends Component{
             method:'GET',
         }).then((res) => {
             let bjtjColumnsId = {};
+            let bjtjColumnsFieldId = {};
             let resColumns=res.ltmpl.columns;
             resColumns.map((item, index) => {
                 console.log(item.title+",==="+item.id)
                 bjtjColumnsId[item.title] = item.id;
+                bjtjColumnsFieldId[item.title] = item.fieldId;
             });
             //console.log(bjtjColumnsId)
             this.setState({bjtjColumnsId: bjtjColumnsId});
+            this.setState({bjtjColumnsFieldId: bjtjColumnsFieldId});
 
             this.initBarListByMenuId(this.state.日查询常量,false);
             this.initPieListByMenuId(this.state.日查询常量,false);
@@ -223,7 +227,7 @@ class DataTj extends Component{
             console.log("饼状图数据==="+JSON.stringify(res));
             this.state.pieQueryKey=res.queryKey;
             if(!this.state.pieReload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
-                this.initPielegendData(31265);
+                this.initPielegendData(this.state.bjtjColumnsFieldId[this.state.电子围栏字段]);
             }
             else
                 this.initPieListByQueryKey();
@@ -281,7 +285,7 @@ class DataTj extends Component{
             console.log("综合饼状图数据==="+JSON.stringify(res));
             this.state.zhPieQueryKey=res.queryKey;
             if(!this.state.zhPieReload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
-                this.initZHPielegendData(31389);
+                this.initZHPielegendData(this.state.bjtjColumnsFieldId[this.state.区域职能2字段]);
             }
             else
                 this.initZHPieListByQueryKey();
@@ -835,11 +839,23 @@ class DataTj extends Component{
                             else if(数据库报警类型.静止报警==数报警类型)
                                 手报警类型=手机端报警类型.静止报警;
 
-                            console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem["默认字段组"]["名称"])
+                            //console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem["默认字段组"]["名称"])
                             if(bjlxItem==手报警类型){
                                 let count=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
                                 bjqyValue+=count;
-                                bjlxList.push({name:手报警类型,count:count});
+                                let bjlxExist=this.checkBjlxExistInList(bjlxList,bjlxItem)
+                                //console.log("bjlxExist==="+bjlxExist)
+                                if(bjlxExist){
+                                    bjlxList.map((bjlxlItem,bjlxlIndex)=>{
+                                        if(bjlxlItem.name==bjlxItem){
+                                            bjlxlItem.count+=count;
+                                            return true;
+                                        }
+                                    });
+                                }
+                                else{
+                                    bjlxList.push({name:手报警类型,count:count});
+                                }
                             }
                         });
                         //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
@@ -872,8 +888,8 @@ class DataTj extends Component{
                 let cellMap = item.cellMap;
                 console.log("===+++"+JSON.stringify(cellMap))
                 if(this.state.zhPieSearchFlag==this.state.日查询常量){
-                    console.log(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.电子围栏字段]])
-                    if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.bjtjColumnsId[this.state.电子围栏字段]]){
+                    console.log(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.区域职能2字段]])
+                    if(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.区域职能2字段]]){
                         let bjlxList=[];
                         this.state.zhBarLegendData.map((bjlxItem,bjlxIndex)=>{
                             let 数据库报警类型=this.state.报警类型数据库里名称;
@@ -895,7 +911,7 @@ class DataTj extends Component{
                             }
                         });
                         //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
-                        zhPieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["围栏编码"]+"@R@"+bjqylItem["默认字段组"]["区域职能2"],bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
+                        zhPieSeriesDataList.push({value: 1548,name: bjqylItem.value,bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
                     }
                 }
                 else{
@@ -962,6 +978,16 @@ class DataTj extends Component{
         let flag=false;
         list.map((item,index)=>{
             if(item.name==bjqy){
+                flag=true;
+                return flag;
+            }
+        });
+        return flag;
+    }
+    checkBjlxExistInList=(list,bjlx)=>{
+        let flag=false;
+        list.map((item,index)=>{
+            if(item.name==bjlx){
                 flag=true;
                 return flag;
             }
