@@ -739,7 +739,7 @@ class DataTj extends Component{
             method:'GET',
             query: {fieldIds:fieldId,pageSize:this.state.pageSize}
         }).then((res) => {
-            //console.log("111elefence==="+JSON.stringify(res.optionsMap[fieldId]))
+            console.log("111elefence==="+JSON.stringify(res.optionsMap[fieldId]))
             let zhPieLegendData=[];
             this.state.zhBjqySelectList=res.optionsMap[fieldId];
             this.state.zhBjqySelectList.map((item,index)=>{
@@ -776,8 +776,10 @@ class DataTj extends Component{
             let xxBjqySelectList=this.state.xxBjqySelectList;
             res.entities.map((item,index)=>{
                 let cellMap=item.cellMap;
-                xxBjqySelectList.push(cellMap[this.state.ssbmColumnsId[this.state.部门名称字段]])
-                xxPieLegendData.push(cellMap[this.state.ssbmColumnsId[this.state.部门名称字段]]);
+                let code=item.code;
+                let 部门名称=cellMap[this.state.ssbmColumnsId[this.state.部门名称字段]];
+                xxBjqySelectList.push({title:部门名称,value:部门名称,code:code});
+                xxPieLegendData.push(部门名称);
             });
 
             console.log("所属部门列表==="+JSON.stringify(xxPieLegendData))
@@ -1232,6 +1234,7 @@ class DataTj extends Component{
                             let 数据库报警类型=this.state.报警类型数据库里名称;
                             let 手机端报警类型=this.state.报警类型手机端显示名称;
                             let 数报警类型=cellMap[this.state.bjtjColumnsId[this.state.报警类型字段]];
+                            console.log("综合:数报警类型==="+数报警类型+","+this.state.bjtjColumnsId[this.state.报警类型字段])
                             let 手报警类型;
                             if(数据库报警类型.紧急报警==数报警类型)
                                 手报警类型=手机端报警类型.紧急报警;
@@ -1336,7 +1339,7 @@ class DataTj extends Component{
                     console.log(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]])
                     if(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]]){
                         let bjlxList=[];
-                        this.state.xxPieLegendData.map((bjlxItem,bjlxIndex)=>{
+                        this.state.xxBarLegendData.map((bjlxItem,bjlxIndex)=>{
                             let 数据库报警类型=this.state.报警类型数据库里名称;
                             let 手机端报警类型=this.state.报警类型手机端显示名称;
                             let 数报警类型=cellMap[this.state.bjtjColumnsId[this.state.报警类型字段]];
@@ -1361,8 +1364,7 @@ class DataTj extends Component{
                     }
                 }
                 else{
-                    console.log("+++2---"+bjqylItem.value+","+cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]])
-                    if(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]]){
+                    if(bjqylItem.code==this.substringItemValue(cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]],0)){
                         let bjqyValue;
                         let bjqy=bjqylItem.value;
                         let bjlxList;
