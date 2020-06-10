@@ -16,6 +16,8 @@ class DataTj extends Component{
         barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],bjqySelectList:[],pieLegendData:[],pieSeriesDataList:[],pieSearchFlag:"",pieReload:false,
         zhBarLegendData:[],zhAlignWithLabel:false,综合X轴字号:"",zhxAxisData:[],zhSeries:[],zhBarSearchFlag:"",zhBarQueryKey:"",zhPieQueryKey:"",zhBarStartDate:"",zhBarEndDate:"", zhBarReload:false,
         zhBarSeriesNameList:[],zhBarSeriesDataList:[],zhBarSeriesColorList:[],zhBjqySelectList:[],zhPieLegendData:[],zhPieSeriesDataList:[],zhPieSearchFlag:"",zhPieReload:false,
+        xxBarLegendData:[],xxAlignWithLabel:false,详细X轴字号:"",xxxAxisData:[],xxSeries:[],xxBarSearchFlag:"",xxBarQueryKey:"",xxPieQueryKey:"",xxBarStartDate:"",xxBarEndDate:"", xxBarReload:false,
+        xxBarSeriesNameList:[],xxBarSeriesDataList:[],xxBarSeriesColorList:[],xxBjqySelectList:[],xxPieLegendData:[],xxPieSeriesDataList:[],xxPieSearchFlag:"",xxPieReload:false,
         bjtjColumnsId:{},//报警统计字段id
         bjtjColumnsFieldId:{},//报警统计字段fieldId
         bjtjCriteriasId:{},
@@ -47,7 +49,7 @@ class DataTj extends Component{
         日查询常量:"date",周查询常量:"week",月查询常量:"month",三个月查询常量:"three_month",
         报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
         报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"},
-        todayBjCountList:[],bjqyList:[],qyzn1List:[]}
+        todayBjCountList:[],bjqyList:[],qyzn1List:[],qyzn2List:[]}
 
     componentDidMount() {
         $("html").css("background-color","#F5F5F5");
@@ -69,6 +71,8 @@ class DataTj extends Component{
             this.initBarlegendData(this.state.bjtjColumnsFieldId[this.state.报警类型字段]);
 
             this.initZHBarlegendData(this.state.bjtjColumnsFieldId[this.state.报警类型字段]);
+
+            this.initXXBarlegendData(this.state.bjtjColumnsFieldId[this.state.报警类型字段]);
         });
     }
     initBjtjColumnsId=(resColumns)=>{
@@ -175,6 +179,48 @@ class DataTj extends Component{
             console.log("综合柱状图数据==="+JSON.stringify(res));
             this.state.zhBarQueryKey=res.queryKey;
             this.initZHBarListByQueryKey();
+        })
+    }
+    initXXBarListByMenuId=(flag,reload)=>{
+        this.state.xxBarSearchFlag=flag;
+        this.state.xxBarReload=reload;
+        let disabledColIds="";
+        $("#xxBar_search_type_div #but_div .quJian_div").css("color","#000");
+        $("#xxBar_search_type_div #but_div .quJian_div").css("border-bottom","#fff solid 1px");
+        if(this.state.xxBarSearchFlag==this.state.日查询常量){
+            $("#xxBar_search_type_div #date_but_div").css("color","#477A8F");
+            $("#xxBar_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段];
+            this.state.详细X轴字号=10;
+            this.state.xxAlignWithLabel=true;
+        }
+        else if(this.state.zhBarSearchFlag==this.state.周查询常量){
+            $("#zhBar_search_type_div #week_but_div").css("color","#477A8F");
+            $("#zhBar_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段];
+            this.state.详细X轴字号=9;
+            this.state.xxAlignWithLabel=false;
+        }
+        else if(this.state.zhBarSearchFlag==this.state.月查询常量){
+            $("#zhBar_search_type_div #month_but_div").css("color","#477A8F");
+            $("#zhBar_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段]+","+this.state.bjtjColumnsId[this.state.月度周字段];
+            this.state.详细X轴字号=9;
+            this.state.xxAlignWithLabel=true;
+        }
+
+        Super.super({
+            url:`api2/entity/${this.state.menuId}/list/tmpl`,
+            method:'GET',
+            query:{disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_97596655673367:this.state.barQyzn2Value,criteria_13:this.state.xxBarStartDate+"~"+this.state.xxBarEndDate}
+        }).then((res) => {
+            console.log(res);
+            console.log("详细柱状图数据==="+JSON.stringify(res));
+            this.state.xxBarQueryKey=res.queryKey;
+            this.initXXBarListByQueryKey();
         })
     }
     initPieListByMenuId=(flag,reload)=>{
@@ -315,6 +361,17 @@ class DataTj extends Component{
             this.initZHBarXAxisData(res);
             this.initZHBarSeriesDataList();
             this.initZHYAxisData(res);
+        })
+    }
+    initXXBarListByQueryKey=()=>{
+        Super.super({
+            url:`api2/entity/list/${this.state.xxBarQueryKey}/data`,
+            method:'GET',
+            query:{pageSize:this.state.pageSize}
+        }).then((res) => {
+            this.initXXBarXAxisData(res);
+            this.initXXBarSeriesDataList();
+            this.initXXYAxisData(res);
         })
     }
     initPieListByQueryKey=()=>{
@@ -504,8 +561,89 @@ class DataTj extends Component{
             this.setState({zhBarLegendData:ldMap});
             //this.setState({series:series});
             this.initQyzn1List(this.state.bjtjCriteriasFieldId[this.state.区域职能1字段])
+            this.initQyzn2List(this.state.bjtjCriteriasFieldId[this.state.区域职能2字段])
             this.initZHBarListByMenuId(this.state.日查询常量,false);
             this.initZHPieListByMenuId(this.state.日查询常量,false);
+        })
+    }
+    initXXBarlegendData=(fieldId)=>{
+        Super.super({
+            url:`api2/meta/dict/field_options`,
+            method:'GET',
+            query: {fieldIds:fieldId}
+        }).then((res) => {
+            console.log(res.optionsMap[fieldId]);
+            let ldMap=[];
+            let ldValueJj=null;
+            let ldValueQc=null;
+            let ldValueZc=null;
+            let ldValueJz=null;
+            let xxBarSeriesNameList=this.state.xxBarSeriesNameList;
+            let xxBarSeriesDataList=this.state.xxBarSeriesDataList;
+            let xxBarSeriesColorList=this.state.xxBarSeriesColorList;
+            res.optionsMap[fieldId].map((item,index)=>{
+                let 数据库里报警类型=this.state.报警类型数据库里名称;
+                let 手机端报警类型=this.state.报警类型手机端显示名称;
+                let color;
+                switch (item.title) {
+                    case 数据库里报警类型.紧急报警:
+                        if(ldValueJj==null){
+                            ldValueJj=手机端报警类型.紧急报警;
+
+                            color="#F00";
+                            xxBarSeriesNameList.push(ldValueJj);
+                            xxBarSeriesDataList[ldValueJj]=[];
+                            xxBarSeriesColorList[ldValueJj]=color;
+                            //series.push({name:ldValueJj,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueJj);
+                        }
+                        break;
+                    case 数据库里报警类型.缺员报警:
+                    case 数据库里报警类型.超员报警:
+                        if(ldValueQc==null){
+                            ldValueQc=手机端报警类型.缺员超员报警;
+
+                            //console.log(手机端报警类型.缺员超员报警)
+                            color="#0F0";
+                            xxBarSeriesNameList.push(ldValueQc);
+                            xxBarSeriesDataList[ldValueQc]=[];
+                            xxBarSeriesColorList[ldValueQc]=color;
+                            //series.push({name:ldValueQc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueQc);
+                        }
+                        break;
+                    case 数据库里报警类型.滞留报警:
+                    case 数据库里报警类型.串岗报警:
+                        if(ldValueZc==null){
+                            ldValueZc=手机端报警类型.串岗滞留报警;
+
+                            color="#00F";
+                            xxBarSeriesNameList.push(ldValueZc);
+                            xxBarSeriesDataList[ldValueZc]=[];
+                            xxBarSeriesColorList[ldValueZc]=color;
+                            //series.push({name:ldValueZc,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueZc);
+                        }
+                        break;
+                    case 数据库里报警类型.静止报警:
+                        if(ldValueJz==null){
+                            ldValueJz=手机端报警类型.静止报警;
+
+                            color="#2f2f4f";
+                            xxBarSeriesNameList.push(ldValueJz);
+                            xxBarSeriesDataList[ldValueJz]=[];
+                            xxBarSeriesColorList[ldValueJz]=color;
+                            //series.push({name:ldValueJz,type:'bar',data:[],barGap:0,itemStyle:{normal:{color:color}}});
+                            ldMap.push(ldValueJz);
+                        }
+                        break;
+                }
+            });
+            this.setState({xxBarLegendData:ldMap});
+            //this.setState({series:series});
+            this.initQyzn2List(this.state.bjtjCriteriasFieldId[this.state.区域职能2字段])
+            this.initXXBarListByMenuId(this.state.日查询常量,false);
+            //this.initXXPieListByMenuId(this.state.日查询常量,false);
         })
     }
     initPielegendData=(fieldId)=>{
@@ -589,6 +727,29 @@ class DataTj extends Component{
         });
         console.log("zhXAxisData==="+xAxisData)
         this.setState({zhxAxisData:xAxisData});
+    }
+    initXXBarXAxisData=(res)=>{
+        let xAxisData=[];
+        res.entities.map((item,index)=>{
+            let cellMap=item.cellMap;
+            console.log("详细cellMap==="+JSON.stringify(cellMap));
+            if(this.state.xxBarSearchFlag==this.state.日查询常量){
+                if(!this.checkBarXAxisDataExist(xAxisData,cellMap[this.state.bjtjColumnsId[this.state.月字段]]+"-"+cellMap[this.state.bjtjColumnsId[this.state.日字段]])){
+                    xAxisData.push(cellMap[this.state.bjtjColumnsId[this.state.月字段]]+"-"+cellMap[this.state.bjtjColumnsId[this.state.日字段]]);
+                }
+            }
+            else if(this.state.xxBarSearchFlag==this.state.周查询常量){
+                let fxd=this.formatterXAxisData(cellMap,this.state.xxBarSearchFlag)
+                if(!this.checkBarXAxisDataExist(xAxisData,fxd))
+                    xAxisData.push(fxd);
+            }
+            else if(this.state.xxBarSearchFlag==this.state.月查询常量){
+                if(!this.checkBarXAxisDataExist(xAxisData,cellMap[this.state.bjtjColumnsId[this.state.月字段]]))
+                    xAxisData.push(cellMap[this.state.bjtjColumnsId[this.state.月字段]]);
+            }
+        });
+        console.log("xxXAxisData==="+xAxisData)
+        this.setState({xxxAxisData:xAxisData});
     }
     initYAxisData=(res)=>{
         console.log("111==="+JSON.stringify(res.entities));
@@ -699,6 +860,60 @@ class DataTj extends Component{
         });
         this.setState({zhSeries:series});
     }
+    initXXYAxisData=(res)=>{
+        console.log("详细111==="+JSON.stringify(res.entities));
+        let series=[];
+        res.entities.map((item,index)=>{
+            let cellMap=item.cellMap;
+            let 数据库报警类型=this.state.报警类型数据库里名称;
+            let 手机端报警类型=this.state.报警类型手机端显示名称;
+            let 数报警类型=cellMap[this.state.bjtjColumnsId[this.state.报警类型字段]];
+            let 手报警类型;
+            if(数据库报警类型.紧急报警==数报警类型)
+                手报警类型=手机端报警类型.紧急报警;
+            else if(数据库报警类型.超员报警==数报警类型||数据库报警类型.缺员报警==数报警类型)
+                手报警类型=手机端报警类型.缺员超员报警;
+            else if(数据库报警类型.串岗报警==数报警类型||数据库报警类型.滞留报警==数报警类型)
+                手报警类型=手机端报警类型.串岗滞留报警;
+            else if(数据库报警类型.静止报警==数报警类型)
+                手报警类型=手机端报警类型.静止报警;
+
+            if(this.state.xxBarSearchFlag==this.state.日查询常量){
+                this.state.xxBarSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                    console.log(sdItem.xLabel+","+cellMap[this.state.bjtjColumnsId[this.state.月字段]]+"-"+cellMap[this.state.bjtjColumnsId[this.state.日字段]]);
+                    if(sdItem.xLabel==cellMap[this.state.bjtjColumnsId[this.state.月字段]]+"-"+cellMap[this.state.bjtjColumnsId[this.state.日字段]]){
+                        sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
+                    }
+                });
+            }
+            else if(this.state.xxBarSearchFlag==this.state.周查询常量){
+                this.state.xxBarSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                    if(sdItem.xLabel==this.formatterXAxisData(cellMap,this.state.周查询常量)){
+                        //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
+                        sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
+                    }
+                });
+            }
+            else if(this.state.xxBarSearchFlag==this.state.月查询常量){
+                this.state.xxBarSeriesDataList[手报警类型].map((sdItem,sdIndex)=>{
+                    if(sdItem.xLabel==cellMap[this.state.bjtjColumnsId[this.state.月字段]]){
+                        //console.log(sdItem.xLabel+","+cellMap[this.state.报警类型]+","+cellMap[this.state.数量])
+                        sdItem.yLabel=sdItem.yLabel+=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
+                    }
+                });
+            }
+            console.log(手报警类型+":"+JSON.stringify(this.state.barSeriesDataList[手报警类型]))//经测试没问题
+        });
+
+        this.state.xxBarLegendData.map((item,index)=>{
+            let data=[];
+            this.state.xxBarSeriesDataList[item].map((sdItem,sdIndex)=>{
+                data.push(sdItem.yLabel);
+            });
+            series.push({name:item,type:'bar',data:data,barGap:0,itemStyle:{normal:{color:this.state.xxBarSeriesColorList[item]}}});
+        });
+        this.setState({xxSeries:series});
+    }
     initTodayBjCount=(res)=>{
         let todayDate=this.getTodayDate();
         let todayBjCountList=this.state.todayBjCountList;
@@ -770,6 +985,20 @@ class DataTj extends Component{
             console.log("综合xItem==="+xItem)
             this.state.zhBarLegendData.map((legItem,index)=>{
                 this.state.zhBarSeriesDataList[legItem].push({"xLabel":xItem,"yLabel":0});
+            });
+        });
+    }
+    initXXBarSeriesDataList=()=>{
+        //先把上次加载的数据清空
+        this.state.xxBarLegendData.map((item,index)=>{
+            this.state.xxBarSeriesDataList[item]=[];
+        });
+
+        //清空上次加载的数据后，再加载新数据
+        this.state.xxxAxisData.map((xItem)=>{
+            console.log("详细xItem==="+xItem)
+            this.state.xxBarLegendData.map((legItem,index)=>{
+                this.state.xxBarSeriesDataList[legItem].push({"xLabel":xItem,"yLabel":0});
             });
         });
     }
@@ -1180,6 +1409,62 @@ class DataTj extends Component{
         }
         return option;
     }
+    getXXBarOption =()=> {
+        let option = {
+            tooltip:{   //展示数据
+                trigger:'axis',
+                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                    type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                }
+            },
+            legend:{
+                itemWidth:10,
+                itemHeight:10,
+                x:'center',
+                y: '15px',
+                textStyle:{
+                    fontSize:9
+                },
+                data:this.state.xxBarLegendData
+            },
+            xAxis:{
+                data:this.state.xxxAxisData,
+                axisTick:{alignWithLabel:this.state.xxAlignWithLabel},
+                axisLine:{
+                    lineStyle:{
+                        color:"#999",
+                        width:0.5
+                    }
+                },
+                axisLabel: {
+                    fontSize:this.state.详细X轴字号,
+                    interval:0
+                    //rotate:45
+                }
+            },
+            yAxis:{
+                type:'value',
+                minInterval: 1,
+                axisLine:{
+                    lineStyle:{
+                        color:"#999",
+                        width:0.5
+                    }
+                },
+                axisLabel:{
+                    fontSize:9
+                },
+                splitLine:{
+                    lineStyle:{
+                        color:"#ddd",
+                        width:0.5
+                    }
+                }
+            },
+            series:this.state.xxSeries
+        }
+        return option;
+    }
     getPieOption=()=>{
         let option = {
             title: {
@@ -1361,12 +1646,34 @@ class DataTj extends Component{
             this.setState({qyzn1List:qyzn1List});
         });
     }
+    initQyzn2List=(fieldId)=>{
+        Super.super({
+            url:`api2/meta/dict/field_options`,
+            method:'GET',
+            query: {fieldIds:fieldId,pageSize:this.state.pageSize}
+        }).then((res) => {
+            let qyzn2List=[];
+            res.optionsMap[fieldId].map((item,index)=>{
+                qyzn2List.push({value:item.value,title:item.title});
+            });
+            //console.log("区域职能2==="+qyzn2List)
+            this.setState({qyzn2List:qyzn2List});
+        });
+    }
     showZHBarQyzn1SelectBgDiv=(flag)=>{
         if(flag==1){
             $("#zhBarQyzn1_select_bg_div").css("display","block");
         }
         else{
             $("#zhBarQyzn1_select_bg_div").css("display","none");
+        }
+    }
+    showXXBarQyzn2SelectBgDiv=(flag)=>{
+        if(flag==1){
+            $("#xxBarQyzn2_select_bg_div").css("display","block");
+        }
+        else{
+            $("#xxBarQyzn2_select_bg_div").css("display","none");
         }
     }
     showZHPieQyzn1SelectBgDiv=(flag)=>{
@@ -1382,6 +1689,11 @@ class DataTj extends Component{
         $("#zhBar_search_type_div #zhQyzn1_but_div").text(qyzn1);
         this.showZHBarQyzn1SelectBgDiv(0);
     }
+    changeBarQyzn2=(qyzn2)=>{
+        this.state.barQyzn2Value=qyzn2;
+        $("#xxBar_search_type_div #xxQyzn2_but_div").text(qyzn2);
+        this.showXXBarQyzn2SelectBgDiv(0);
+    }
     changePieQyzn1=(qyzn1)=>{
         this.state.pieQyzn1Value=qyzn1;
         $("#zhPie_search_type_div #zhQyzn1_but_div").text(qyzn1);
@@ -1392,7 +1704,7 @@ class DataTj extends Component{
     }
 
     render() {
-        const {日查询常量,周查询常量,月查询常量,三个月查询常量,barLegendData,todayBjCountList,qyzn1List}=this.state
+        const {日查询常量,周查询常量,月查询常量,三个月查询常量,barLegendData,todayBjCountList,qyzn1List,qyzn2List}=this.state
         let {itemDiv}=this.state
         return <div className="dataTjPage_div">
             <div className="zhBarQyzn1_select_bg_div" id="zhBarQyzn1_select_bg_div">
@@ -1403,6 +1715,20 @@ class DataTj extends Component{
                         {
                             qyzn1List.map((item,index)=>{
                                 return <div className="item_div" onClick={(e)=>this.changeBarQyzn1(item.title)}>{item.value}</div>
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div className="xxBarQyzn2_select_bg_div" id="xxBarQyzn2_select_bg_div">
+                <div className="qyzn2_select_div">
+                    <div className="title_div">区域职能2</div>
+                    <span className="close_span" onClick={(e)=>this.showXXBarQyzn2SelectBgDiv(0)}>X</span>
+                    <div className="content_div">
+                        {
+                            qyzn2List.map((item,index)=>{
+                                return <div className="item_div" onClick={(e)=>this.changeBarQyzn2(item.title)}>{item.value}</div>
                             })
                         }
                     </div>
@@ -1537,7 +1863,19 @@ class DataTj extends Component{
                 </div>
             </div>
 
-            <div className="xxbjtj_content_div" id="xxbjtj_content_div"></div>
+            <div className="xxbjtj_content_div" id="xxbjtj_content_div">
+                <div className="xxBar_search_type_div" id="xxBar_search_type_div">
+                    <div className="but_div" id="but_div">
+                        <div className="date_but_div quJian_div" id="date_but_div" onClick={(e)=>this.initXXBarListByMenuId(日查询常量,true)}>日</div>
+                        <div className="week_but_div quJian_div" id="week_but_div" onClick={(e)=>this.initXXBarListByMenuId(周查询常量,true)}>周</div>
+                        <div className="month_but_div quJian_div" id="month_but_div" onClick={(e)=>this.initXXBarListByMenuId(月查询常量,true)}>月</div>
+                        <div className="xxQyzn2_but_div" id="xxQyzn2_but_div" onClick={(e)=>this.showXXBarQyzn2SelectBgDiv(1)}>区域职能2</div>
+                    </div>
+                </div>
+                <div className="xxBar_div">
+                    <BarReactEcharts className="reactEcharts" id="echart" option={this.getXXBarOption()}/>
+                </div>
+            </div>
         </div>;
     }
 }
