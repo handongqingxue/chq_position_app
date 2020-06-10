@@ -20,6 +20,7 @@ class DataTj extends Component{
         xxBarSeriesNameList:[],xxBarSeriesDataList:[],xxBarSeriesColorList:[],xxBjqySelectList:[],xxPieLegendData:[],xxPieSeriesDataList:[],xxPieSearchFlag:"",xxPieReload:false,
         bjtjColumnsId:{},//报警统计字段id
         bjtjColumnsFieldId:{},//报警统计字段fieldId
+        bjtjDayColumnsId:{},
         ssbmColumnsId:{},
         bjtjCriteriasId:{},
         bjtjCriteriasFieldId:{},
@@ -88,6 +89,21 @@ class DataTj extends Component{
         //console.log(bjtjColumnsId)
         this.setState({bjtjColumnsId: bjtjColumnsId});
         this.setState({bjtjColumnsFieldId: bjtjColumnsFieldId});
+    }
+    initBjtjDayColumnsId=()=>{
+        Super.super({
+            url:`api2/entity/96488554110993/list/tmpl`,
+            method:'GET',
+        }).then((res) => {
+            console.log("day==="+JSON.stringify(res.ltmpl.columns))
+            let bjtjDayColumnsId = {};
+            let resColumns=res.ltmpl.columns;
+            resColumns.map((item, index) => {
+                bjtjDayColumnsId[item.title] = item.id;
+            });
+            this.setState({bjtjDayColumnsId: bjtjDayColumnsId});
+            this.initPieListByMenuId(this.state.日查询常量,false);
+        });
     }
     initCriteriasId=(resCriterias)=>{
         let bjtjCriteriasId={};
@@ -551,7 +567,7 @@ class DataTj extends Component{
             this.setState({barLegendData:ldMap});
             //this.setState({series:series});
             this.initBarListByMenuId(this.state.日查询常量,false);
-            this.initPieListByMenuId(this.state.日查询常量,false);
+            this.initBjtjDayColumnsId();
         })
     }
     initZHBarlegendData=(fieldId)=>{
@@ -1118,13 +1134,29 @@ class DataTj extends Component{
                 let cellMap = item.cellMap;
                 console.log("===+++"+JSON.stringify(cellMap))
                 if(this.state.pieSearchFlag==this.state.日查询常量){
-                    console.log(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.bjtjColumnsId[this.state.电子围栏字段]])
-                    if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.bjtjColumnsId[this.state.电子围栏字段]]){
-                        let bjlxList=[];
+                    console.log(bjqylItem["默认字段组"]["围栏编码"]+","+cellMap[this.state.bjtjDayColumnsId[this.state.电子围栏字段]])
+                    if(bjqylItem["默认字段组"]["围栏编码"]==cellMap[this.state.bjtjDayColumnsId[this.state.电子围栏字段]]){
+                        let bjqyValue;
+                        let bjqy=bjqylItem["默认字段组"]["围栏编码"]+"@R@"+bjqylItem["默认字段组"]["名称"];
+                        let bjlxList;
+                        let exist=this.checkBjqyExistInPSDList(pieSeriesDataList,bjqy)
+                        if(exist){
+                            pieSeriesDataList.map((psdItem,psdIndex)=>{
+                                if(psdItem.name==bjqy){
+                                    bjqyValue=psdItem.value;
+                                    bjlxList=psdItem.bjlxList;
+                                    return true;
+                                }
+                            });
+                        }
+                        else{
+                            bjqyValue=0;
+                            bjlxList=[];
+                        }
                         this.state.barLegendData.map((bjlxItem,bjlxIndex)=>{
                             let 数据库报警类型=this.state.报警类型数据库里名称;
                             let 手机端报警类型=this.state.报警类型手机端显示名称;
-                            let 数报警类型=cellMap[this.state.bjtjColumnsId[this.state.报警类型字段]];
+                            let 数报警类型=cellMap[this.state.bjtjDayColumnsId[this.state.报警类型字段]];
                             let 手报警类型;
                             if(数据库报警类型.紧急报警==数报警类型)
                                 手报警类型=手机端报警类型.紧急报警;
@@ -1137,11 +1169,35 @@ class DataTj extends Component{
 
                             console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem["默认字段组"]["名称"])
                             if(bjlxItem==手报警类型){
-                                bjlxList.push({name:手报警类型,count:cellMap[this.state.bjtjColumnsId[this.state.总数量字段]]});
+                                let count=parseInt(cellMap[this.state.bjtjDayColumnsId[this.state.总数量字段]]);
+                                bjqyValue+=count;
+                                let bjlxExist=this.checkBjlxExistInList(bjlxList,bjlxItem)
+                                //console.log("bjlxExist==="+bjlxExist)
+                                if(bjlxExist){
+                                    bjlxList.map((bjlxlItem,bjlxlIndex)=>{
+                                        if(bjlxlItem.name==bjlxItem){
+                                            bjlxlItem.count+=count;
+                                            return true;
+                                        }
+                                    });
+                                }
+                                else {
+                                    bjlxList.push({name: 手报警类型, count: count});
+                                }
                             }
                         });
                         //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
-                        pieSeriesDataList.push({value: 1548,name: bjqylItem["默认字段组"]["围栏编码"]+"@R@"+bjqylItem["默认字段组"]["名称"],bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
+                        if(exist){
+                            pieSeriesDataList.map((psdItem,psdIndex)=>{
+                                if(psdItem.name==bjqy){
+                                    psdItem.value=bjqyValue;
+                                    return true;
+                                }
+                            });
+                        }
+                        else {
+                            pieSeriesDataList.push({value: bjqyValue, name: bjqy, bjlxList: bjlxList, selected: (bjqylIndex % 2 == 1) ? true : false});
+                        }
                     }
                 }
                 else{
@@ -1227,14 +1283,14 @@ class DataTj extends Component{
                 let cellMap = item.cellMap;
                 console.log("===+++"+JSON.stringify(cellMap))
                 if(this.state.zhPieSearchFlag==this.state.日查询常量){
-                    console.log(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.区域职能2字段]])
-                    if(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.区域职能2字段]]){
+                    console.log(bjqylItem.value+",,,"+cellMap[this.state.bjtjDayColumnsId[this.state.区域职能2字段]])
+                    if(bjqylItem.value==cellMap[this.state.bjtjDayColumnsId[this.state.区域职能2字段]]){
                         let bjlxList=[];
                         this.state.zhBarLegendData.map((bjlxItem,bjlxIndex)=>{
                             let 数据库报警类型=this.state.报警类型数据库里名称;
                             let 手机端报警类型=this.state.报警类型手机端显示名称;
-                            let 数报警类型=cellMap[this.state.bjtjColumnsId[this.state.报警类型字段]];
-                            console.log("综合:数报警类型==="+数报警类型+","+this.state.bjtjColumnsId[this.state.报警类型字段])
+                            let 数报警类型=cellMap[this.state.bjtjDayColumnsId[this.state.报警类型字段]];
+                            console.log("综合:数报警类型==="+数报警类型+","+this.state.bjtjDayColumnsId[this.state.报警类型字段])
                             let 手报警类型;
                             if(数据库报警类型.紧急报警==数报警类型)
                                 手报警类型=手机端报警类型.紧急报警;
@@ -1247,7 +1303,7 @@ class DataTj extends Component{
 
                             console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem["默认字段组"]["名称"])
                             if(bjlxItem==手报警类型){
-                                bjlxList.push({name:手报警类型,count:cellMap[this.state.bjtjColumnsId[this.state.总数量字段]]});
+                                bjlxList.push({name:手报警类型,count:cellMap[this.state.bjtjDayColumnsId[this.state.总数量字段]]});
                             }
                         });
                         //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
