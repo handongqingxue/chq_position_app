@@ -20,7 +20,8 @@ class DataTj extends Component{
         bjtjColumnsFieldId:{},//报警统计字段fieldId
         bjtjCriteriasId:{},
         bjtjCriteriasFieldId:{},
-        qyzn1Value:"",
+        barQyzn1Value:"",
+        pieQyzn1Value:"",
         区域职能1字段:"区域职能1",
         区域职能2字段:"区域职能2",
         所属部门字段:"所属部门",
@@ -168,7 +169,7 @@ class DataTj extends Component{
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_97596655673367:this.state.qyzn1Value,criteria_13:this.state.zhBarStartDate+"~"+this.state.zhBarEndDate}
+            query:{disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_97596655673367:this.state.barQyzn1Value,criteria_13:this.state.zhBarStartDate+"~"+this.state.zhBarEndDate}
         }).then((res) => {
             console.log(res);
             console.log("综合柱状图数据==="+JSON.stringify(res));
@@ -241,8 +242,8 @@ class DataTj extends Component{
         let disabledColIds="";
         let startDate;
         let days;
-        $("#zhPie_search_type_div #but_div div").css("color","#000");
-        $("#zhPie_search_type_div #but_div div").css("border-bottom","#fff solid 1px");
+        $("#zhPie_search_type_div #but_div .quJian_div").css("color","#000");
+        $("#zhPie_search_type_div #but_div .quJian_div").css("border-bottom","#fff solid 1px");
         if(this.state.zhPieSearchFlag==this.state.日查询常量){
             $("#zhPie_search_type_div #date_but_div").css("color","#477A8F");
             $("#zhPie_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
@@ -281,7 +282,7 @@ class DataTj extends Component{
         Super.super({
             url:`api2/entity/${menuId}/list/tmpl`,
             method:'GET',
-            query:{pageSize:this.state.pageSize,disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_13:startDate+"~"+endDate}
+            query:{pageSize:this.state.pageSize,disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_97596655673367:this.state.pieQyzn1Value,criteria_13:startDate+"~"+endDate}
         }).then((res) => {
             console.log("综合饼状图数据==="+JSON.stringify(res));
             this.state.zhPieQueryKey=res.queryKey;
@@ -955,7 +956,18 @@ class DataTj extends Component{
                             if(bjlxItem==手报警类型){
                                 let count=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
                                 bjqyValue+=count;
-                                bjlxList.push({name:手报警类型,count:count});
+                                let bjlxExist=this.checkBjlxExistInList(bjlxList,bjlxItem)
+                                if(bjlxExist){
+                                    bjlxList.map((bjlxlItem,bjlxlIndex)=>{
+                                        if(bjlxlItem.name==bjlxItem){
+                                            bjlxlItem.count+=count;
+                                            return true;
+                                        }
+                                    });
+                                }
+                                else {
+                                    bjlxList.push({name: 手报警类型, count: count});
+                                }
                             }
                         });
                         //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
@@ -1345,22 +1357,35 @@ class DataTj extends Component{
             res.optionsMap[fieldId].map((item,index)=>{
                 qyzn1List.push({value:item.value,title:item.title});
             });
-            console.log("区域职能1==="+qyzn1List)
+            //console.log("区域职能1==="+qyzn1List)
             this.setState({qyzn1List:qyzn1List});
         });
     }
-    showQyzn1SelectBgDiv=(flag)=>{
+    showZHBarQyzn1SelectBgDiv=(flag)=>{
         if(flag==1){
-            $("#qyzn1_select_bg_div").css("display","block");
+            $("#zhBarQyzn1_select_bg_div").css("display","block");
         }
         else{
-            $("#qyzn1_select_bg_div").css("display","none");
+            $("#zhBarQyzn1_select_bg_div").css("display","none");
         }
     }
-    changeQyzn1=(qyzn1)=>{
-        this.state.qyzn1Value=qyzn1;
-        $("#qyzn1_but_div").text(qyzn1);
-        this.showQyzn1SelectBgDiv(0);
+    showZHPieQyzn1SelectBgDiv=(flag)=>{
+        if(flag==1){
+            $("#zhPieQyzn1_select_bg_div").css("display","block");
+        }
+        else{
+            $("#zhPieQyzn1_select_bg_div").css("display","none");
+        }
+    }
+    changeBarQyzn1=(qyzn1)=>{
+        this.state.barQyzn1Value=qyzn1;
+        $("#zhBar_search_type_div #zhQyzn1_but_div").text(qyzn1);
+        this.showZHBarQyzn1SelectBgDiv(0);
+    }
+    changePieQyzn1=(qyzn1)=>{
+        this.state.pieQyzn1Value=qyzn1;
+        $("#zhPie_search_type_div #zhQyzn1_but_div").text(qyzn1);
+        this.showZHPieQyzn1SelectBgDiv(0);
     }
     goPage=(value)=>{
         this.props.history.push(`/${value}`);
@@ -1370,19 +1395,34 @@ class DataTj extends Component{
         const {日查询常量,周查询常量,月查询常量,三个月查询常量,barLegendData,todayBjCountList,qyzn1List}=this.state
         let {itemDiv}=this.state
         return <div className="dataTjPage_div">
-            <div className="qyzn1_select_bg_div" id="qyzn1_select_bg_div">
+            <div className="zhBarQyzn1_select_bg_div" id="zhBarQyzn1_select_bg_div">
                 <div className="qyzn1_select_div">
                     <div className="title_div">区域职能1</div>
-                    <span className="close_span" onClick={(e)=>this.showQyzn1SelectBgDiv(0)}>X</span>
+                    <span className="close_span" onClick={(e)=>this.showZHBarQyzn1SelectBgDiv(0)}>X</span>
                     <div className="content_div">
                         {
                             qyzn1List.map((item,index)=>{
-                                return <div className="item_div" onClick={(e)=>this.changeQyzn1(item.title)}>{item.value}</div>
+                                return <div className="item_div" onClick={(e)=>this.changeBarQyzn1(item.title)}>{item.value}</div>
                             })
                         }
                     </div>
                 </div>
             </div>
+
+            <div className="zhPieQyzn1_select_bg_div" id="zhPieQyzn1_select_bg_div">
+                <div className="qyzn1_select_div">
+                    <div className="title_div">区域职能1</div>
+                    <span className="close_span" onClick={(e)=>this.showZHPieQyzn1SelectBgDiv(0)}>X</span>
+                    <div className="content_div">
+                        {
+                            qyzn1List.map((item,index)=>{
+                                return <div className="item_div" onClick={(e)=>this.changePieQyzn1(item.title)}>{item.value}</div>
+                            })
+                        }
+                    </div>
+                </div>
+            </div>
+
             <div className="top_div">报警统计</div>
             <div className="back_but_div" onClick={this.goPage.bind(this,'home')}>&lt;返回</div>
             <div>
@@ -1477,7 +1517,7 @@ class DataTj extends Component{
                         <div className="date_but_div quJian_div" id="date_but_div" onClick={(e)=>this.initZHBarListByMenuId(日查询常量,true)}>日</div>
                         <div className="week_but_div quJian_div" id="week_but_div" onClick={(e)=>this.initZHBarListByMenuId(周查询常量,true)}>周</div>
                         <div className="month_but_div quJian_div" id="month_but_div" onClick={(e)=>this.initZHBarListByMenuId(月查询常量,true)}>月</div>
-                        <div className="qyzn1_but_div" id="qyzn1_but_div" onClick={(e)=>this.showQyzn1SelectBgDiv(1)}>区域职能1</div>
+                        <div className="zhQyzn1_but_div" id="zhQyzn1_but_div" onClick={(e)=>this.showZHBarQyzn1SelectBgDiv(1)}>区域职能1</div>
                     </div>
                 </div>
                 <div className="zhBar_div">
@@ -1485,10 +1525,11 @@ class DataTj extends Component{
                 </div>
                 <div className="zhPie_search_type_div" id="zhPie_search_type_div">
                     <div className="but_div" id="but_div">
-                        <div className="date_but_div" id="date_but_div" onClick={(e)=>this.initZHPieListByMenuId(日查询常量,true)}>日</div>
-                        <div className="week_but_div" id="week_but_div" onClick={(e)=>this.initZHPieListByMenuId(周查询常量,true)}>周</div>
-                        <div className="month_but_div" id="month_but_div" onClick={(e)=>this.initZHPieListByMenuId(月查询常量,true)}>月</div>
-                        <div className="three_month_but_div" id="three_month_but_div" onClick={(e)=>this.initZHPieListByMenuId(三个月查询常量,true)}>三个月</div>
+                        <div className="date_but_div quJian_div" id="date_but_div" onClick={(e)=>this.initZHPieListByMenuId(日查询常量,true)}>日</div>
+                        <div className="week_but_div quJian_div" id="week_but_div" onClick={(e)=>this.initZHPieListByMenuId(周查询常量,true)}>周</div>
+                        <div className="month_but_div quJian_div" id="month_but_div" onClick={(e)=>this.initZHPieListByMenuId(月查询常量,true)}>月</div>
+                        <div className="three_month_but_div quJian_div" id="three_month_but_div" onClick={(e)=>this.initZHPieListByMenuId(三个月查询常量,true)}>三个月</div>
+                        <div className="zhQyzn1_but_div" id="zhQyzn1_but_div" onClick={(e)=>this.showZHPieQyzn1SelectBgDiv(1)}>区域职能1</div>
                     </div>
                 </div>
                 <div className="zhPie_div">
