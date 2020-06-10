@@ -11,7 +11,7 @@ import * as moment from "moment";
 import Text from "antd-mobile/es/text";
 
 class DataTj extends Component{
-    state={menuId:17,pageSize:100,
+    state={menuId:17,ssbmMenuId:96700609732656,pageSize:100,
         barLegendData:[],alignWithLabel:false,X轴字号:"",xAxisData:[],series:[],barSearchFlag:"",barQueryKey:"",pieQueryKey:"",barStartDate:"",barEndDate:"", barReload:false,
         barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],bjqySelectList:[],pieLegendData:[],pieSeriesDataList:[],pieSearchFlag:"",pieReload:false,
         zhBarLegendData:[],zhAlignWithLabel:false,综合X轴字号:"",zhxAxisData:[],zhSeries:[],zhBarSearchFlag:"",zhBarQueryKey:"",zhPieQueryKey:"",zhBarStartDate:"",zhBarEndDate:"", zhBarReload:false,
@@ -20,6 +20,7 @@ class DataTj extends Component{
         xxBarSeriesNameList:[],xxBarSeriesDataList:[],xxBarSeriesColorList:[],xxBjqySelectList:[],xxPieLegendData:[],xxPieSeriesDataList:[],xxPieSearchFlag:"",xxPieReload:false,
         bjtjColumnsId:{},//报警统计字段id
         bjtjColumnsFieldId:{},//报警统计字段fieldId
+        ssbmColumnsId:{},
         bjtjCriteriasId:{},
         bjtjCriteriasFieldId:{},
         barQyzn1Value:"",
@@ -38,6 +39,7 @@ class DataTj extends Component{
         数量字段:"数量",
         电子围栏字段:"电子围栏",
         总数量字段:"总数量",
+        部门名称字段:"名称",
         // 报警围栏:96488543625218,
         // 日期:96488543625219,
         // 月度周:96488543625222,
@@ -339,6 +341,64 @@ class DataTj extends Component{
                 this.initZHPieListByQueryKey();
         })
     }
+    initXXPieListByMenuId=(flag,reload)=>{
+        this.state.xxPieSearchFlag=flag;
+        this.state.xxPieReload=reload;
+        let menuId="";
+        let disabledColIds="";
+        let startDate;
+        let days;
+        $("#zhPie_search_type_div #but_div .quJian_div").css("color","#000");
+        $("#zhPie_search_type_div #but_div .quJian_div").css("border-bottom","#fff solid 1px");
+        if(this.state.xxPieSearchFlag==this.state.日查询常量){
+            $("#xxPie_search_type_div #date_but_div").css("color","#477A8F");
+            $("#xxPie_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            menuId=96488554110993;
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段];
+            days=-1;
+        }
+        else if(this.state.xxPieSearchFlag==this.state.周查询常量){
+            $("#xxPie_search_type_div #week_but_div").css("color","#477A8F");
+            $("#xxPie_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            menuId=this.state.menuId;
+            disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.日字段];
+            days=-7;
+        }
+        else if(this.state.xxPieSearchFlag==this.state.月查询常量){
+            $("#xxPie_search_type_div #month_but_div").css("color","#477A8F");
+            $("#xxPie_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
+
+            menuId=this.state.menuId;
+            disabledColIds=this.state.bjtjColumnsId[this.state.日字段]+","+this.state.bjtjColumnsId[this.state.月度周字段];
+            days=-30;
+        }
+        else if(this.state.xxPieSearchFlag==this.state.三个月查询常量) {
+            $("#xxPie_search_type_div #three_month_but_div").css("color", "#477A8F");
+            $("#xxPie_search_type_div #three_month_but_div").css("border-bottom", "#497DD0 solid 1px");
+
+            menuId=this.state.menuId;
+            days=-90;
+        }
+
+        startDate=this.getAddDate(days);
+        let endDate=this.getTodayDate();
+        //let endDate=this.getAddDate(1);
+        Super.super({
+            url:`api2/entity/${menuId}/list/tmpl`,
+            method:'GET',
+            query:{pageSize:this.state.pageSize,disabledColIds:disabledColIds,sortColIds:(this.state.bjtjColumnsId[this.state.日期字段]+"_ASC"),criteria_97596655673367:this.state.pieQyzn2Value,criteria_13:startDate+"~"+endDate}
+        }).then((res) => {
+            console.log("详细饼状图数据==="+JSON.stringify(res));
+            this.state.xxPieQueryKey=res.queryKey;
+            if(!this.state.xxPieReload){//这里是初始化报警类型，只有在首次加载页面的时候初始化一次就行
+                this.initSsbmColumnsId();
+            }
+            else
+                this.initXXPieListByQueryKey();
+        })
+    }
     initBarListByQueryKey=()=>{
         Super.super({
             url:`api2/entity/list/${this.state.barQueryKey}/data`,
@@ -390,6 +450,15 @@ class DataTj extends Component{
             query:{pageSize:this.state.pageSize}
         }).then((res) =>{
             this.initZHPieSeriesDataList(res);
+        })
+    }
+    initXXPieListByQueryKey=()=>{
+        Super.super({
+            url:`api2/entity/list/${this.state.xxPieQueryKey}/data`,
+            method:'GET',
+            query:{pageSize:this.state.pageSize}
+        }).then((res) =>{
+            this.initXXPieSeriesDataList(res);
         })
     }
     initBarlegendData=(fieldId)=>{
@@ -643,7 +712,7 @@ class DataTj extends Component{
             //this.setState({series:series});
             this.initQyzn2List(this.state.bjtjCriteriasFieldId[this.state.区域职能2字段])
             this.initXXBarListByMenuId(this.state.日查询常量,false);
-            //this.initXXPieListByMenuId(this.state.日查询常量,false);
+            this.initXXPieListByMenuId(this.state.日查询常量,false);
         })
     }
     initPielegendData=(fieldId)=>{
@@ -680,6 +749,40 @@ class DataTj extends Component{
 
             this.setState({zhPieLegendData:zhPieLegendData});
             this.initZHPieListByQueryKey();
+        });
+    }
+    initSsbmColumnsId=()=>{
+        Super.super({
+            url:`api2/entity/${this.state.ssbmMenuId}/list/tmpl`,
+            method:'GET',
+            query:{pageSize:this.state.pageSize}
+        }).then((res) => {
+            let ssbmColumnsId={};
+            res.ltmpl.columns.map((item,index)=>{
+                ssbmColumnsId[item.title]=item.id;
+            });
+            console.log("ssbmColumnsId==="+JSON.stringify(ssbmColumnsId))
+            this.setState({ssbmColumnsId:ssbmColumnsId});
+            this.initXXPielegendData(res.queryKey);
+        });
+    }
+    initXXPielegendData=(queryKey)=>{
+        Super.super({
+            url:`api2/entity/list/${queryKey}/data`,
+            method:'GET',
+            query:{pageSize:this.state.pageSize}
+        }).then((res) => {
+            let xxPieLegendData=[];
+            let xxBjqySelectList=this.state.xxBjqySelectList;
+            res.entities.map((item,index)=>{
+                let cellMap=item.cellMap;
+                xxBjqySelectList.push(cellMap[this.state.ssbmColumnsId[this.state.部门名称字段]])
+                xxPieLegendData.push(cellMap[this.state.ssbmColumnsId[this.state.部门名称字段]]);
+            });
+
+            console.log("所属部门列表==="+JSON.stringify(xxPieLegendData))
+            this.setState({xxPieLegendData:xxPieLegendData});
+            this.initXXPieListByQueryKey();
         });
     }
     initBarXAxisData=(res)=>{
@@ -1219,6 +1322,115 @@ class DataTj extends Component{
         this.setState({zhPieSeriesDataList:zhPieSeriesDataList});
         console.log(JSON.stringify(zhPieSeriesDataList))
     }
+    initXXPieSeriesDataList=(res)=>{
+        let entities=res.entities;
+        let xxBjqySelectList=this.state.xxBjqySelectList;
+        let xxPieSeriesDataList=[];
+        console.log("详细饼状图数据res==="+JSON.stringify(res))
+        console.log("xxBjqySelectList==="+JSON.stringify(xxBjqySelectList))
+        entities.map((item,index)=> {
+            xxBjqySelectList.map((bjqylItem,bjqylIndex)=>{
+                let cellMap = item.cellMap;
+                console.log("===+++==="+JSON.stringify(cellMap))
+                if(this.state.xxPieSearchFlag==this.state.日查询常量){
+                    console.log(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]])
+                    if(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]]){
+                        let bjlxList=[];
+                        this.state.xxPieLegendData.map((bjlxItem,bjlxIndex)=>{
+                            let 数据库报警类型=this.state.报警类型数据库里名称;
+                            let 手机端报警类型=this.state.报警类型手机端显示名称;
+                            let 数报警类型=cellMap[this.state.bjtjColumnsId[this.state.报警类型字段]];
+                            console.log("数报警类型==="+数报警类型+","+this.state.bjtjColumnsId[this.state.报警类型字段])
+                            let 手报警类型;
+                            if(数据库报警类型.紧急报警==数报警类型)
+                                手报警类型=手机端报警类型.紧急报警;
+                            else if(数据库报警类型.超员报警==数报警类型||数据库报警类型.缺员报警==数报警类型)
+                                手报警类型=手机端报警类型.缺员超员报警;
+                            else if(数据库报警类型.串岗报警==数报警类型||数据库报警类型.滞留报警==数报警类型)
+                                手报警类型=手机端报警类型.串岗滞留报警;
+                            else if(数据库报警类型.静止报警==数报警类型)
+                                手报警类型=手机端报警类型.静止报警;
+
+                            console.log("bjlxItem=="+bjlxItem+",手报警类型==="+手报警类型+",bjqy==="+bjqylItem)
+                            if(bjlxItem==手报警类型){
+                                bjlxList.push({name:手报警类型,count:cellMap[this.state.bjtjColumnsId[this.state.总数量字段]]});
+                            }
+                        });
+                        //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
+                        xxPieSeriesDataList.push({value: 1548,name: bjqylItem.value,bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
+                    }
+                }
+                else{
+                    console.log("+++2---"+bjqylItem.value+","+cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]])
+                    if(bjqylItem.value==cellMap[this.state.bjtjColumnsId[this.state.所属部门字段]]){
+                        let bjqyValue;
+                        let bjqy=bjqylItem.value;
+                        let bjlxList;
+                        let exist=this.checkBjqyExistInPSDList(xxPieSeriesDataList,bjqy)
+                        if(exist){
+                            xxPieSeriesDataList.map((psdItem,psdIndex)=>{
+                                if(psdItem.name==bjqy){
+                                    bjqyValue=psdItem.value;
+                                    bjlxList=psdItem.bjlxList;
+                                    return true;
+                                }
+                            });
+                        }
+                        else{
+                            bjqyValue=0;
+                            bjlxList=[];
+                        }
+                        this.state.xxBarLegendData.map((bjlxItem,bjlxIndex)=>{
+                            let 数据库报警类型=this.state.报警类型数据库里名称;
+                            let 手机端报警类型=this.state.报警类型手机端显示名称;
+                            let 数报警类型=cellMap[this.state.bjtjColumnsId[this.state.报警类型字段]];
+                            let 手报警类型;
+                            if(数据库报警类型.紧急报警==数报警类型)
+                                手报警类型=手机端报警类型.紧急报警;
+                            else if(数据库报警类型.超员报警==数报警类型||数据库报警类型.缺员报警==数报警类型)
+                                手报警类型=手机端报警类型.缺员超员报警;
+                            else if(数据库报警类型.串岗报警==数报警类型||数据库报警类型.滞留报警==数报警类型)
+                                手报警类型=手机端报警类型.串岗滞留报警;
+                            else if(数据库报警类型.静止报警==数报警类型)
+                                手报警类型=手机端报警类型.静止报警;
+
+                            if(bjlxItem==手报警类型){
+                                let count=parseInt(cellMap[this.state.bjtjColumnsId[this.state.数量字段]]);
+                                bjqyValue+=count;
+                                let bjlxExist=this.checkBjlxExistInList(bjlxList,bjlxItem)
+                                if(bjlxExist){
+                                    bjlxList.map((bjlxlItem,bjlxlIndex)=>{
+                                        if(bjlxlItem.name==bjlxItem){
+                                            bjlxlItem.count+=count;
+                                            return true;
+                                        }
+                                    });
+                                }
+                                else {
+                                    bjlxList.push({name: 手报警类型, count: count});
+                                }
+                            }
+                        });
+                        //pieSeriesDataList.push({value: 1548,name: '一车间', selected: true});
+                        if(exist){
+                            xxPieSeriesDataList.map((psdItem,psdIndex)=>{
+                                if(psdItem.name==bjqy){
+                                    psdItem.value=bjqyValue;
+                                    return true;
+                                }
+                            });
+                        }
+                        else{
+                            console.log("bjqy==="+bjqy)
+                            xxPieSeriesDataList.push({value: bjqyValue,name: bjqy,bjlxList:bjlxList, selected: (bjqylIndex%2==1)?true:false});
+                        }
+                    }
+                }
+            });
+        });
+        this.setState({xxPieSeriesDataList:xxPieSeriesDataList});
+        console.log(JSON.stringify(xxPieSeriesDataList))
+    }
     checkBjqyExistInPSDList=(list,bjqy)=>{
         let flag=false;
         list.map((item,index)=>{
@@ -1592,6 +1804,62 @@ class DataTj extends Component{
         }
         return option;
     }
+    getXXPieOption=()=>{
+        let option = {
+            title: {
+                text: '车间报警统计',
+                //subtext: '虚构数据',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                //formatter: '{a} <br/>{b} : {c} ({d}%)<br/>aaaaaaa'
+                formatter:function (json) {
+                    console.log("json==="+JSON.stringify(json)+","+JSON.stringify(json["data"]["bjlxList"]))
+                    let html="";
+                    html+=json["data"]["name"]+":"+json["data"]["value"]
+                    let bjlxList=json["data"]["bjlxList"];
+                    bjlxList.map((item,index)=>{
+                        html+="<br/>"+item.name+":"+item.count
+                    });
+                    return html
+                }
+            },
+            legend: {
+                bottom: 10,
+                left: 'center',
+                data: this.state.xxPieLegendData
+            },
+            series: [
+                {
+                    type: 'pie',
+                    radius: '65%',
+                    center: ['50%', '50%'],
+                    label: {
+                        position: 'inner',
+                        formatter:
+                            this.state.bjqyList.length<=4
+                                ?
+                                function(json){
+                                    return ""
+                                }
+                                :
+                                function(json){
+                                    return json["data"]["name"]
+                                }
+                    },
+                    selectedMode: 'single',
+                    data:this.state.xxPieSeriesDataList,
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                    }
+                }
+            ]
+        }
+        return option;
+    }
     showContentDiv=(flag)=>{
         if(flag=="zhbjtj"){
             $("#zhbjtj_but_div").css("color","#477A8F");
@@ -1874,6 +2142,18 @@ class DataTj extends Component{
                 </div>
                 <div className="xxBar_div">
                     <BarReactEcharts className="reactEcharts" id="echart" option={this.getXXBarOption()}/>
+                </div>
+                <div className="xxPie_search_type_div" id="xxPie_search_type_div">
+                    <div className="but_div" id="but_div">
+                        <div className="date_but_div quJian_div" id="date_but_div" onClick={(e)=>this.initXXPieListByMenuId(日查询常量,true)}>日</div>
+                        <div className="week_but_div quJian_div" id="week_but_div" onClick={(e)=>this.initXXPieListByMenuId(周查询常量,true)}>周</div>
+                        <div className="month_but_div quJian_div" id="month_but_div" onClick={(e)=>this.initXXPieListByMenuId(月查询常量,true)}>月</div>
+                        <div className="three_month_but_div quJian_div" id="three_month_but_div" onClick={(e)=>this.initXXPieListByMenuId(三个月查询常量,true)}>三个月</div>
+                        <div className="xxQyzn1_but_div" id="xxQyzn1_but_div" onClick={(e)=>this.showZHPieQyzn1SelectBgDiv(1)}>区域职能2</div>
+                    </div>
+                </div>
+                <div className="xxPie_div">
+                    <PieReactEcharts className="reactEcharts" id="echart" option={this.getXXPieOption()}/>1
                 </div>
             </div>
         </div>;
