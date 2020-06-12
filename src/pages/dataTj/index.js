@@ -1855,7 +1855,7 @@ class DataTj extends Component{
             legend: {
                 // orient: 'vertical',
                 // top: 'middle',
-                bottom: 10,
+                bottom: 0,
                 left: 'center',
                 data: this.state.pieLegendData,
                 formatter:function(json){
@@ -1924,7 +1924,7 @@ class DataTj extends Component{
                 }
             },
             legend: {
-                bottom: 10,
+                bottom: 0,
                 left: 'center',
                 data: this.state.zhPieLegendData
             },
@@ -1980,7 +1980,7 @@ class DataTj extends Component{
                 }
             },
             legend: {
-                bottom: 10,
+                bottom: 0,
                 left: 'center',
                 data: this.state.xxPieLegendData
             },
