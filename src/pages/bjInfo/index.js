@@ -23,7 +23,9 @@ class BjInfo extends Component{
         // 围栏名称:204,
         // 报警类型:210,
         // 报警时间:206,
-        bjDetailTitle:"",bjDetailContent:"",bjDetailCode:""}
+        报警类型数据库里名称:{紧急报警:"人员一键紧急报警",缺员报警:"车间缺员报警",超员报警:"车间超员报警",串岗报警:"人员串岗报警",滞留报警:"人员滞留报警",静止报警:"人员长时间静止报警"},
+        报警类型手机端显示名称:{紧急报警:"一键紧急报警",缺员超员报警:"车间缺员、超员报警",串岗滞留报警:"人员串岗、滞留报警",静止报警:"静止报警"},
+        bjlxLength:0,bjDetailTitle:"",bjDetailContent:"",bjDetailCode:""}
 
     componentDidMount(){
         $("html").css("background-color","#fff");
@@ -43,47 +45,57 @@ class BjInfo extends Component{
     }
     initListByMenuId=(reload)=>{
         let quyu=$("#quyu_select").val();
-        let bjlx=$("#bjlx_select").val();
-        Super.super({
-            url:`api2/entity/${this.state.menuId}/list/tmpl`,
-            method:'GET',
-            query:{criteria_32:bjlx,criteria_37:quyu}
-            //query:query
-        }).then((res) => {
-            console.log(res);
-            if(!reload){
-                res.ltmpl.criterias.map((item,index)=>{
-                    if(item.id==32){
-                        this.state.selectIds.bjlxId=item.id;
-                        this.state.fieldIds.bjlxFieldId=item.fieldId;
-                    }
-                    else if(item.id==37){
-                        this.state.selectIds.bjqyId=item.id;
-                        this.state.fieldIds.bjqyFieldId=item.fieldId;
-                    }
-                });
-                /*
-                let bjqyId=this.state.selectIds.bjqyId;
-                let bjqyFieldId=this.state.fieldIds.bjqyFieldId;
-                this.initSelect(bjqyId,bjqyFieldId);
-                 */
-                this.initBJQYSelect();
+        let bjlxArr=$("#bjlx_select").val().split(",");
+        this.state.bjlxLength=bjlxArr.length;
+        let bjList=[];
+        for(let i=0;i<this.state.bjlxLength;i++){
+            Super.super({
+                url:`api2/entity/${this.state.menuId}/list/tmpl`,
+                method:'GET',
+                query:{criteria_32:bjlxArr[i],criteria_37:quyu}
+                //query:query
+            }).then((res) => {
+                console.log(res);
+                if(!reload){
+                    res.ltmpl.criterias.map((item,index)=>{
+                        if(item.id==32){
+                            this.state.selectIds.bjlxId=item.id;
+                            this.state.fieldIds.bjlxFieldId=item.fieldId;
+                        }
+                        else if(item.id==37){
+                            this.state.selectIds.bjqyId=item.id;
+                            this.state.fieldIds.bjqyFieldId=item.fieldId;
+                        }
+                    });
+                    /*
+                    let bjqyId=this.state.selectIds.bjqyId;
+                    let bjqyFieldId=this.state.fieldIds.bjqyFieldId;
+                    this.initSelect(bjqyId,bjqyFieldId);
+                     */
+                    this.initBJQYSelect();
 
-                let bjlxId=this.state.selectIds.bjlxId;
-                let bjlxFieldId=this.state.fieldIds.bjlxFieldId;
-                this.initSelect(bjlxId,bjlxFieldId);
-                this.initColumnsId(res.ltmpl.columns);
-            }
-            this.initListByQueryKey(res.queryKey);
-        })
+                    let bjlxId=this.state.selectIds.bjlxId;
+                    let bjlxFieldId=this.state.fieldIds.bjlxFieldId;
+                    this.initSelect(bjlxId,bjlxFieldId);
+                    this.initColumnsId(res.ltmpl.columns);
+                }
+                this.initListByQueryKey(res.queryKey,i,bjList);
+            })
+        }
     }
-    initListByQueryKey=(queryKey)=>{
+    initListByQueryKey=(queryKey,i,bjList)=>{
+        //console.log("i==="+i)
         Super.super({
             url:`api2/entity/list/${queryKey}/data`,
             method:'GET',
+            query:{pageSize:100}
         }).then((res) => {
-            console.log("==="+JSON.stringify(res));
-            this.setState({bjList:res.entities});
+            //console.log("==="+JSON.stringify(res));
+            res.entities.map((item,index)=>{
+                bjList.push(item)
+            });
+            if(i==this.state.bjlxLength-1)
+                this.setState({bjList:bjList});
         })
     }
     initSelect=(selectId,fieldId)=>{
@@ -92,12 +104,50 @@ class BjInfo extends Component{
             method:'GET',
             query: {fieldIds:fieldId}
         }).then((res) => {
-            console.log(res.optionsMap[fieldId]);
-            if(selectId==32)
-                this.setState({bjlxSelectList:res.optionsMap[fieldId]});
+            console.log("fieldId==="+JSON.stringify(res.optionsMap[fieldId]));
+            if(selectId==32){
+                let bjlxSelectList=[];
+                res.optionsMap[fieldId].map((item,index)=>{
+                    let 数据库里报警类型=this.state.报警类型数据库里名称;
+                    let 手机端报警类型=this.state.报警类型手机端显示名称;
+                    let bjlxSelectItem;
+                    let exist=false;
+                    switch (item.title) {
+                        case 数据库里报警类型.紧急报警:
+                            bjlxSelectItem={title:手机端报警类型.紧急报警,value:数据库里报警类型.紧急报警}
+                            break;
+                        case 数据库里报警类型.缺员报警:
+                        case 数据库里报警类型.超员报警:
+                            exist=this.checkBjlxExistInSelect(bjlxSelectList,手机端报警类型.缺员超员报警)
+                            bjlxSelectItem={title:手机端报警类型.缺员超员报警,value:数据库里报警类型.缺员报警+","+数据库里报警类型.超员报警}
+                            break;
+                        case 数据库里报警类型.滞留报警:
+                        case 数据库里报警类型.串岗报警:
+                            exist=this.checkBjlxExistInSelect(bjlxSelectList,手机端报警类型.串岗滞留报警)
+                            bjlxSelectItem={title:手机端报警类型.串岗滞留报警,value:数据库里报警类型.滞留报警+","+数据库里报警类型.串岗报警}
+                            break;
+                        case 数据库里报警类型.静止报警:
+                            bjlxSelectItem={title:手机端报警类型.静止报警,value:数据库里报警类型.静止报警}
+                            break;
+                    }
+                    if(!exist)
+                        bjlxSelectList.push(bjlxSelectItem);
+                });
+                this.setState({bjlxSelectList:bjlxSelectList});
+            }
             else if(selectId==37)
                 this.setState({bjqySelectList:res.optionsMap[fieldId]});
         })
+    }
+    checkBjlxExistInSelect=(bjlxList,title)=>{
+        let exist=false;
+        bjlxList.map((item,index)=>{
+            if(item.title==title){
+                exist=true;
+                return exist;
+            }
+        });
+        return exist;
     }
     initBJQYSelect=()=>{
         Super.super({
