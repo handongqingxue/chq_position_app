@@ -32,7 +32,7 @@ class Login extends Component{
                     }
                     else{
                         if(res.status === 'suc'){
-                            window.location.href="/#/home";
+                            window.location.hash="#/home";
                             Units.setLocalStorge("tokenName", res.token)
                         }
                         else if(res.status=="error"){
