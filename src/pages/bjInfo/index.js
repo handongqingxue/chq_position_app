@@ -41,7 +41,7 @@ class BjInfo extends Component{
             //console.log(item.title+","+item.id)
             columnsId[item.title]=item.id;
         });
-        console.log(columnsId)
+        //console.log(columnsId)
         this.setState({columnsId:columnsId});
     }
     initListByMenuId=(reload)=>{
@@ -54,7 +54,7 @@ class BjInfo extends Component{
             query:{criteria_32:bjlxs,criteria_33:"待处理",criteria_37:quyu}
             //query:query
         }).then((res) => {
-            console.log(res);
+            //console.log(res);
             if(!reload){
                 let criteriasFieldKey={};
                 res.ltmpl.criterias.map((item,index)=>{
@@ -91,7 +91,7 @@ class BjInfo extends Component{
             method:'GET',
             query:{pageSize:100}
         }).then((res) => {
-            console.log("==="+JSON.stringify(res));
+            //console.log("==="+JSON.stringify(res));
             this.setState({bjList:res.entities});
         })
     }
@@ -101,7 +101,7 @@ class BjInfo extends Component{
             method:'GET',
             query: {fieldIds:fieldId}
         }).then((res) => {
-            console.log("fieldId==="+JSON.stringify(res.optionsMap[fieldId]));
+            //console.log("fieldId==="+JSON.stringify(res.optionsMap[fieldId]));
             if(selectId==32){
                 let bjlxSelectList=[];
                 res.optionsMap[fieldId].map((item,index)=>{
@@ -152,7 +152,7 @@ class BjInfo extends Component{
             method:'GET',
             query:{pageSize:100}
         }).then((res) => {
-            console.log(res);
+            //console.log(res);
             this.setState({bjqySelectList:res.result.entities});
         })
     }
@@ -219,7 +219,7 @@ class BjInfo extends Component{
             method:'post',
             data: data
         }).then((res) => {
-            console.log("res==="+JSON.stringify(res));
+            //console.log("res==="+JSON.stringify(res));
             if(res.status === "suc") {
                 Toast.success("处理成功！") //刷新列表
                 this.showBjDetailDialogDiv(null,null,0);

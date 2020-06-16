@@ -6,7 +6,7 @@ import $ from "jquery";
 import {Toast} from "antd-mobile";
 
 class FixedSet extends Component{
-    state={menuId:96653404938261,code:"99156204279701516",groupsList:[],selectList:[],fieldItemList:[]}
+    state={menuId:96653404938261,code:"98972186405904392",groupsList:[],selectList:[],fieldItemList:[]}
 
     componentDidMount(){
         $("html").css("background-color","#EDEDED");
@@ -17,9 +17,9 @@ class FixedSet extends Component{
             url:`api2/meta/tmpl/${this.state.menuId}/dtmpl/normal/`,
             method:'GET',
         }).then((res) => {
-            console.log(res)
+            //console.log(res)
             let groupsList=res.config.dtmpl.groups;
-            console.log(groupsList[0].title)
+            //console.log(groupsList[0].title)
             let selectId=[];
             groupsList.map((item,index)=>{
                 item.fields.map((it)=>{
@@ -35,12 +35,12 @@ class FixedSet extends Component{
                     fieldIds:selectId.join(',')
                 },
             }).then((res)=>{
-                console.log(JSON.stringify(res))
+                //console.log(JSON.stringify(res))
                 let selectList=[];
                 let optionsMap=res.optionsMap;
                 for(let key in optionsMap){
                     selectList[key]=optionsMap[key]
-                    console.log("selectList=="+JSON.stringify(selectList[key]))
+                    //console.log("selectList=="+JSON.stringify(selectList[key]))
                 }
                 this.setState({selectList:selectList});
                 this.initDetail()
@@ -53,7 +53,7 @@ class FixedSet extends Component{
             method:'GET',
         }).then((resi)=>{
             let fieldMap=resi.entity.fieldMap;
-            console.log("resi.fieldMap==="+JSON.stringify(fieldMap))
+            //console.log("resi.fieldMap==="+JSON.stringify(fieldMap))
             for(let key in fieldMap){
                 this.state.fieldItemList[key]=fieldMap[key];
             }
@@ -99,7 +99,7 @@ class FixedSet extends Component{
             method:'POST',
             data:data
         }).then((res)=>{
-            console.log(JSON.stringify(res))
+            //console.log(JSON.stringify(res))
             if(res && res.status==="suc") {
                 Toast.success("保存成功！")
                 this.goPage('home')
