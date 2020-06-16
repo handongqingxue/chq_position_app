@@ -13,6 +13,7 @@ import alert from "antd-mobile/lib/modal/alert";
 class BjInfo extends Component{
     state={menuId:28,selectIds:{bjqyId:"",bjlxId:""},fieldIds:{bjlxFieldId:"",bjqyFieldId:""},bjlxSelectList:[],bjqySelectList:[],bjList:[],
         columnsId:{},
+        criteriasFieldKey:{},
         实体名称字段:"实体名称",
         处理状态字段:"处理状态",
         围栏名称字段:"围栏名称",
@@ -50,11 +51,12 @@ class BjInfo extends Component{
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
-            query:{criteria_32:bjlxs,criteria_37:quyu}
+            query:{criteria_32:bjlxs,criteria_33:"待处理",criteria_37:quyu}
             //query:query
         }).then((res) => {
             console.log(res);
             if(!reload){
+                let criteriasFieldKey={};
                 res.ltmpl.criterias.map((item,index)=>{
                     if(item.id==32){
                         this.state.selectIds.bjlxId=item.id;
@@ -64,7 +66,10 @@ class BjInfo extends Component{
                         this.state.selectIds.bjqyId=item.id;
                         this.state.fieldIds.bjqyFieldId=item.fieldId;
                     }
+
+                    criteriasFieldKey[item.title]=item.fieldKey;
                 });
+                this.setState({criteriasFieldKey:criteriasFieldKey});
                 /*
                 let bjqyId=this.state.selectIds.bjqyId;
                 let bjqyFieldId=this.state.fieldIds.bjqyFieldId;
@@ -86,7 +91,7 @@ class BjInfo extends Component{
             method:'GET',
             query:{pageSize:100}
         }).then((res) => {
-            //console.log("==="+JSON.stringify(res));
+            console.log("==="+JSON.stringify(res));
             this.setState({bjList:res.entities});
         })
     }
@@ -195,30 +200,32 @@ class BjInfo extends Component{
     }
     showDeleteAlert = () => {
         //alert(this.bjDetailCode);
-        alert("删除操作","确认删除这条记录吗???",[{
+        alert("处理操作","确认处理这条记录吗???",[{
                 text:"取消"
             },
             {
                 text:"确认",
-                onPress:()=>this.handelDelete(this.state.bjDetailCode)
+                onPress:()=>this.handelState(this.state.bjDetailCode)
             }
         ])
     }
-    handelDelete=(code)=>{
-        //console.log("code==="+code);
+    handelState=(code)=>{
+        console.log("code==="+code);
+        let data={};
+        data['唯一编码']=code;
+        data[this.state.criteriasFieldKey[this.state.处理状态字段]]="已处理";
         Super.super({
-            url: `api2/entity/${this.state.menuId}/detail`,
-            method:'DELETE',
-            data: {
-                codes: code
-            }
+            url: `api2/entity/${this.state.menuId}/detail/normal/`,
+            method:'post',
+            data: data
         }).then((res) => {
+            console.log("res==="+JSON.stringify(res));
             if(res.status === "suc") {
-                Toast.success("删除成功！") //刷新列表
+                Toast.success("处理成功！") //刷新列表
                 this.showBjDetailDialogDiv(null,null,0);
                 this.initListByMenuId(true);
             } else {
-                Toast.info('删除失败！')
+                Toast.info('处理失败！')
             }
         })
     }
