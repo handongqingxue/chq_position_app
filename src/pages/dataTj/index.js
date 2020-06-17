@@ -17,7 +17,7 @@ class DataTj extends Component{
         zhBarLegendData:[],zhAlignWithLabel:false,综合X轴字号:"",zhxAxisData:[],zhSeries:[],zhBarSearchFlag:"",zhBarQueryKey:"",zhPieQueryKey:"",zhBarStartDate:"",zhBarEndDate:"", zhBarReload:false,
         zhBarSeriesNameList:[],zhBarSeriesDataList:[],zhBarSeriesColorList:[],zhBjqySelectList:[],zhPieLegendData:[],zhPieLegendSelected:{},zhPieSeriesDataList:[],zhPieSearchFlag:"",zhPieReload:false,
         xxBarLegendData:[],xxAlignWithLabel:false,详细X轴字号:"",xxxAxisData:[],xxSeries:[],xxBarSearchFlag:"",xxBarQueryKey:"",xxPieQueryKey:"",xxBarStartDate:"",xxBarEndDate:"", xxBarReload:false,
-        xxBarSeriesNameList:[],xxBarSeriesDataList:[],xxBarSeriesColorList:[],xxBjqySelectList:[],xxPieLegendData:[],xxPieSeriesDataList:[],xxPieSearchFlag:"",xxPieReload:false,
+        xxBarSeriesNameList:[],xxBarSeriesDataList:[],xxBarSeriesColorList:[],xxBjqySelectList:[],xxPieLegendData:[],xxPieLegendSelected:{},xxPieSeriesDataList:[],xxPieSearchFlag:"",xxPieReload:false,
         bjtjColumnsId:{},//报警统计字段id
         bjtjColumnsFieldId:{},//报警统计字段fieldId
         bjtjDayColumnsId:{},
@@ -813,6 +813,7 @@ class DataTj extends Component{
             query:{pageSize:this.state.pageSize}
         }).then((res) => {
             let xxPieLegendData=[];
+            let xxPieLegendSelected={};
             let xxBjqySelectList=this.state.xxBjqySelectList;
             res.entities.map((item,index)=>{
                 let cellMap=item.cellMap;
@@ -820,10 +821,12 @@ class DataTj extends Component{
                 let 部门名称=cellMap[this.state.ssbmColumnsId[this.state.名称字段]];
                 xxBjqySelectList.push({title:部门名称,value:部门名称,code:code});
                 xxPieLegendData.push(部门名称);
+                xxPieLegendSelected[部门名称]=true;
             });
 
             //console.log("所属部门列表==="+JSON.stringify(xxPieLegendData))
             this.setState({xxPieLegendData:xxPieLegendData});
+            this.setState({xxPieLegendSelected:xxPieLegendSelected});
             this.initXXPieListByQueryKey();
         });
     }
@@ -867,7 +870,7 @@ class DataTj extends Component{
                 }
             }
             else{
-                if(index>=2){
+                if(index>=4){
                     item.name+="#";
                     zhPieLegendSelected[item.name]=false;
                 }
@@ -884,6 +887,36 @@ class DataTj extends Component{
         else{
             $(".zhPie_div .show_all_but_div").css("display","block");
             $(".zhPie_div .hide_part_but_div").css("display","none");
+        }
+    }
+    resetXXPieLegendData=(showAll)=>{
+        let xxPieSeriesDataList=this.state.xxPieSeriesDataList;
+        let xxPieLegendSelected=this.state.xxPieLegendSelected;
+        xxPieSeriesDataList.map((item,index)=>{
+            if(showAll){
+                if(!xxPieLegendSelected[item.name]){
+                    item.name=item.name.substring(0,item.name.length-1);
+                    xxPieLegendSelected[item.name]=true;
+                }
+            }
+            else{
+                if(index>=4){
+                    item.name+="#";
+                    xxPieLegendSelected[item.name]=false;
+                }
+            }
+        });
+        this.setState({xxPieSeriesDataList:xxPieSeriesDataList});
+        this.setState({xxPieLegendSelected:xxPieLegendSelected});
+        //console.log("xxPieLegendSelected===="+JSON.stringify(xxPieLegendSelected))
+
+        if(showAll){
+            $(".xxPie_div .show_all_but_div").css("display","none");
+            $(".xxPie_div .hide_part_but_div").css("display","block");
+        }
+        else{
+            $(".xxPie_div .show_all_but_div").css("display","block");
+            $(".xxPie_div .hide_part_but_div").css("display","none");
         }
     }
     initBarXAxisData=(res)=>{
@@ -1652,6 +1685,7 @@ class DataTj extends Component{
         });
         this.setState({xxPieSeriesDataList:xxPieSeriesDataList});
         //console.log(JSON.stringify(xxPieSeriesDataList))
+        this.resetXXPieLegendData(false);
     }
     checkBjqyExistInPSDList=(list,bjqy)=>{
         let flag=false;
@@ -2413,6 +2447,10 @@ class DataTj extends Component{
                 </div>
                 <div className="xxPie_div">
                     <PieReactEcharts className="reactEcharts" id="echart" option={this.getXXPieOption()}/>
+                    <div className="show_all_div">
+                        <div className="show_all_but_div" onClick={(e)=>this.resetXXPieLegendData(true)}>查看全部</div>
+                        <div className="hide_part_but_div" onClick={(e)=>this.resetXXPieLegendData(false)}>隐藏部分</div>
+                    </div>
                 </div>
             </div>
         </div>;
