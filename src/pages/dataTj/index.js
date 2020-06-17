@@ -15,7 +15,7 @@ class DataTj extends Component{
         barLegendData:[],alignWithLabel:false,X轴字号:"",xAxisData:[],series:[],barSearchFlag:"",barQueryKey:"",pieQueryKey:"",barStartDate:"",barEndDate:"", barReload:false,
         barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],bjqySelectList:[],pieLegendData:[],pieLegendSelected:{},pieSeriesDataList:[],pieSearchFlag:"",pieReload:false,
         zhBarLegendData:[],zhAlignWithLabel:false,综合X轴字号:"",zhxAxisData:[],zhSeries:[],zhBarSearchFlag:"",zhBarQueryKey:"",zhPieQueryKey:"",zhBarStartDate:"",zhBarEndDate:"", zhBarReload:false,
-        zhBarSeriesNameList:[],zhBarSeriesDataList:[],zhBarSeriesColorList:[],zhBjqySelectList:[],zhPieLegendData:[],zhPieSeriesDataList:[],zhPieSearchFlag:"",zhPieReload:false,
+        zhBarSeriesNameList:[],zhBarSeriesDataList:[],zhBarSeriesColorList:[],zhBjqySelectList:[],zhPieLegendData:[],zhPieLegendSelected:{},zhPieSeriesDataList:[],zhPieSearchFlag:"",zhPieReload:false,
         xxBarLegendData:[],xxAlignWithLabel:false,详细X轴字号:"",xxxAxisData:[],xxSeries:[],xxBarSearchFlag:"",xxBarQueryKey:"",xxPieQueryKey:"",xxBarStartDate:"",xxBarEndDate:"", xxBarReload:false,
         xxBarSeriesNameList:[],xxBarSeriesDataList:[],xxBarSeriesColorList:[],xxBjqySelectList:[],xxPieLegendData:[],xxPieSeriesDataList:[],xxPieSearchFlag:"",xxPieReload:false,
         bjtjColumnsId:{},//报警统计字段id
@@ -778,13 +778,16 @@ class DataTj extends Component{
         }).then((res) => {
             //console.log("111elefence==="+JSON.stringify(res.optionsMap[fieldId]))
             let zhPieLegendData=[];
+            let zhPieLegendSelected={};
             this.state.zhBjqySelectList=res.optionsMap[fieldId];
             this.state.zhBjqySelectList.map((item,index)=>{
                 //console.log("????==="+(item.value))
                 zhPieLegendData.push(item.value);
+                zhPieLegendSelected[item.value]=true;
             });
 
             this.setState({zhPieLegendData:zhPieLegendData});
+            this.setState({zhPieLegendSelected:zhPieLegendSelected});
             this.initZHPieListByQueryKey();
         });
     }
@@ -851,6 +854,36 @@ class DataTj extends Component{
         else{
             $(".pie_div .show_all_but_div").css("display","block");
             $(".pie_div .hide_part_but_div").css("display","none");
+        }
+    }
+    resetZHPieLegendData=(showAll)=>{
+        let zhPieSeriesDataList=this.state.zhPieSeriesDataList;
+        let zhPieLegendSelected=this.state.zhPieLegendSelected;
+        zhPieSeriesDataList.map((item,index)=>{
+            if(showAll){
+                if(!zhPieLegendSelected[item.name]){
+                    item.name=item.name.substring(0,item.name.length-1);
+                    zhPieLegendSelected[item.name]=true;
+                }
+            }
+            else{
+                if(index>=2){
+                    item.name+="#";
+                    zhPieLegendSelected[item.name]=false;
+                }
+            }
+        });
+        this.setState({zhPieSeriesDataList:zhPieSeriesDataList});
+        this.setState({zhPieLegendSelected:zhPieLegendSelected});
+        //console.log("zhPieLegendSelected===="+JSON.stringify(zhPieLegendSelected))
+
+        if(showAll){
+            $(".zhPie_div .show_all_but_div").css("display","none");
+            $(".zhPie_div .hide_part_but_div").css("display","block");
+        }
+        else{
+            $(".zhPie_div .show_all_but_div").css("display","block");
+            $(".zhPie_div .hide_part_but_div").css("display","none");
         }
     }
     initBarXAxisData=(res)=>{
@@ -1317,7 +1350,7 @@ class DataTj extends Component{
             });
         });
         this.setState({pieSeriesDataList:pieSeriesDataList});
-        console.log("pieSeriesDataList==="+JSON.stringify(pieSeriesDataList))
+        //console.log("pieSeriesDataList==="+JSON.stringify(pieSeriesDataList))
         this.resetPieLegendData(false);
     }
     initZHPieSeriesDataList=(res)=>{
@@ -1469,6 +1502,7 @@ class DataTj extends Component{
         });
         this.setState({zhPieSeriesDataList:zhPieSeriesDataList});
         //console.log(JSON.stringify(zhPieSeriesDataList))
+        this.resetZHPieLegendData(false);
     }
     initXXPieSeriesDataList=(res)=>{
         let entities=res.entities;
@@ -1961,7 +1995,8 @@ class DataTj extends Component{
             legend: {
                 bottom: 0,
                 left: 'center',
-                data: this.state.zhPieLegendData
+                data: this.state.zhPieLegendData,
+                selected:this.state.zhPieLegendSelected
             },
             series: [
                 {
@@ -2348,6 +2383,10 @@ class DataTj extends Component{
                 </div>
                 <div className="zhPie_div">
                     <PieReactEcharts className="reactEcharts" id="echart" option={this.getZHPieOption()}/>
+                    <div className="show_all_div">
+                        <div className="show_all_but_div" onClick={(e)=>this.resetZHPieLegendData(true)}>查看全部</div>
+                        <div className="hide_part_but_div" onClick={(e)=>this.resetZHPieLegendData(false)}>隐藏部分</div>
+                    </div>
                 </div>
             </div>
 
