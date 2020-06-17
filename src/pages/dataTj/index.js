@@ -13,7 +13,7 @@ import Text from "antd-mobile/es/text";
 class DataTj extends Component{
     state={menuId:17,ssbmMenuId:96700609732656,pageSize:100,
         barLegendData:[],alignWithLabel:false,X轴字号:"",xAxisData:[],series:[],barSearchFlag:"",barQueryKey:"",pieQueryKey:"",barStartDate:"",barEndDate:"", barReload:false,
-        barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],bjqySelectList:[],pieLegendData:[],pieSeriesDataList:[],pieSearchFlag:"",pieReload:false,
+        barSeriesNameList:[],barSeriesDataList:[],barSeriesColorList:[],bjqySelectList:[],pieLegendData:[],pieLegendSelected:{},pieSeriesDataList:[],pieSearchFlag:"",pieReload:false,
         zhBarLegendData:[],zhAlignWithLabel:false,综合X轴字号:"",zhxAxisData:[],zhSeries:[],zhBarSearchFlag:"",zhBarQueryKey:"",zhPieQueryKey:"",zhBarStartDate:"",zhBarEndDate:"", zhBarReload:false,
         zhBarSeriesNameList:[],zhBarSeriesDataList:[],zhBarSeriesColorList:[],zhBjqySelectList:[],zhPieLegendData:[],zhPieSeriesDataList:[],zhPieSearchFlag:"",zhPieReload:false,
         xxBarLegendData:[],xxAlignWithLabel:false,详细X轴字号:"",xxxAxisData:[],xxSeries:[],xxBarSearchFlag:"",xxBarQueryKey:"",xxPieQueryKey:"",xxBarStartDate:"",xxBarEndDate:"", xxBarReload:false,
@@ -756,12 +756,16 @@ class DataTj extends Component{
         }).then((res) => {
             //console.log("elefence==="+JSON.stringify(res.result.entities))
             let pieLegendData=[];
+            let pieLegendSelected={};
             this.state.bjqySelectList=res.result.entities;
             this.state.bjqySelectList.map((item,index)=>{
-                pieLegendData.push(item["默认字段组"]["围栏编码"]+"@R@"+item["默认字段组"]["名称"]);
+                let legendItem=item["默认字段组"]["围栏编码"]+"@R@"+item["默认字段组"]["名称"];
+                pieLegendData.push(legendItem);
+                pieLegendSelected[legendItem]=true;
             });
 
             this.setState({pieLegendData:pieLegendData});
+            this.setState({pieLegendSelected:pieLegendSelected});
             this.initPieListByQueryKey();
         });
     }
@@ -819,6 +823,35 @@ class DataTj extends Component{
             this.setState({xxPieLegendData:xxPieLegendData});
             this.initXXPieListByQueryKey();
         });
+    }
+    resetPieLegendData=(showAll)=>{
+        let pieSeriesDataList=this.state.pieSeriesDataList;
+        let pieLegendSelected=this.state.pieLegendSelected;
+        pieSeriesDataList.map((item,index)=>{
+            if(showAll){
+                if(!pieLegendSelected[item.name]){
+                    item.name=item.name.substring(0,item.name.length-1);
+                    pieLegendSelected[item.name]=true;
+                }
+            }
+            else{
+                if(index>=4){
+                    item.name+="#";
+                    pieLegendSelected[item.name]=false;
+                }
+            }
+        });
+        this.setState({pieSeriesDataList:pieSeriesDataList});
+        this.setState({pieLegendSelected:pieLegendSelected});
+
+        if(showAll){
+            $(".pie_div .show_all_but_div").css("display","none");
+            $(".pie_div .hide_part_but_div").css("display","block");
+        }
+        else{
+            $(".pie_div .show_all_but_div").css("display","block");
+            $(".pie_div .hide_part_but_div").css("display","none");
+        }
     }
     initBarXAxisData=(res)=>{
         let xAxisData=[];
@@ -1284,7 +1317,8 @@ class DataTj extends Component{
             });
         });
         this.setState({pieSeriesDataList:pieSeriesDataList});
-        //console.log(JSON.stringify(pieSeriesDataList))
+        console.log("pieSeriesDataList==="+JSON.stringify(pieSeriesDataList))
+        this.resetPieLegendData(false);
     }
     initZHPieSeriesDataList=(res)=>{
         let entities=res.entities;
@@ -1860,7 +1894,8 @@ class DataTj extends Component{
                 data: this.state.pieLegendData,
                 formatter:function(json){
                     return json.split("@R@")[1]
-                }
+                },
+                selected:this.state.pieLegendSelected
             },
             series: [
                 {
@@ -2278,6 +2313,10 @@ class DataTj extends Component{
             </div>
             <div className="pie_div">
                 <PieReactEcharts className="reactEcharts" id="echart" option={this.getPieOption()}/>
+                <div className="show_all_div">
+                    <div className="show_all_but_div" onClick={(e)=>this.resetPieLegendData(true)}>查看全部</div>
+                    <div className="hide_part_but_div" onClick={(e)=>this.resetPieLegendData(false)}>隐藏部分</div>
+                </div>
             </div>
 
             <div className="bjtj_tab_div">
