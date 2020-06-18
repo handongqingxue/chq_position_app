@@ -120,6 +120,7 @@ class DataTj extends Component{
         this.state.barSearchFlag=flag;
         this.state.barReload=reload;
         let disabledColIds="";
+        let days;
         $("#bar_search_type_div #but_div div").css("color","#000");
         $("#bar_search_type_div #but_div div").css("border-bottom","#fff solid 1px");
         if(this.state.barSearchFlag==this.state.日查询常量){
@@ -127,6 +128,7 @@ class DataTj extends Component{
             $("#bar_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds="";
+            days=-7;
             this.state.X轴字号=10;
             this.state.alignWithLabel=true;
         }
@@ -135,6 +137,7 @@ class DataTj extends Component{
             $("#bar_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.日字段];//这里是第一次加载完之后的数据
+            days=-30;
             this.state.X轴字号=9;
             this.state.alignWithLabel=false;
         }
@@ -143,9 +146,12 @@ class DataTj extends Component{
             $("#bar_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.日字段]+","+this.state.bjtjColumnsId[this.state.月度周字段];
+            days=-365;
             this.state.X轴字号=9;
             this.state.alignWithLabel=true;
         }
+        this.state.barStartDate=this.getAddDate(days);
+        this.state.barEndDate=this.getTodayDate();
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
@@ -161,6 +167,7 @@ class DataTj extends Component{
         this.state.zhBarSearchFlag=flag;
         this.state.zhBarReload=reload;
         let disabledColIds="";
+        let days;
         $("#zhBar_search_type_div #but_div .quJian_div").css("color","#000");
         $("#zhBar_search_type_div #but_div .quJian_div").css("border-bottom","#fff solid 1px");
         if(this.state.zhBarSearchFlag==this.state.日查询常量){
@@ -168,6 +175,7 @@ class DataTj extends Component{
             $("#zhBar_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段];
+            days=-7;
             this.state.综合X轴字号=10;
             this.state.zhAlignWithLabel=true;
         }
@@ -176,6 +184,7 @@ class DataTj extends Component{
             $("#zhBar_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段];
+            days=-30;
             this.state.综合X轴字号=9;
             this.state.zhAlignWithLabel=false;
         }
@@ -184,10 +193,13 @@ class DataTj extends Component{
             $("#zhBar_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段]+","+this.state.bjtjColumnsId[this.state.月度周字段];
+            days=-365;
             this.state.综合X轴字号=9;
             this.state.zhAlignWithLabel=true;
         }
 
+        this.state.zhBarStartDate=this.getAddDate(days);
+        this.state.zhBarEndDate=this.getTodayDate();
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
@@ -203,6 +215,7 @@ class DataTj extends Component{
         this.state.xxBarSearchFlag=flag;
         this.state.xxBarReload=reload;
         let disabledColIds="";
+        let days;
         $("#xxBar_search_type_div #but_div .quJian_div").css("color","#000");
         $("#xxBar_search_type_div #but_div .quJian_div").css("border-bottom","#fff solid 1px");
         if(this.state.xxBarSearchFlag==this.state.日查询常量){
@@ -210,6 +223,7 @@ class DataTj extends Component{
             $("#xxBar_search_type_div #date_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段];
+            days=-7;
             this.state.详细X轴字号=10;
             this.state.xxAlignWithLabel=true;
         }
@@ -218,6 +232,7 @@ class DataTj extends Component{
             $("#xxBar_search_type_div #week_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段];
+            days=-30;
             this.state.详细X轴字号=9;
             this.state.xxAlignWithLabel=false;
         }
@@ -226,10 +241,13 @@ class DataTj extends Component{
             $("#xxBar_search_type_div #month_but_div").css("border-bottom","#497DD0 solid 1px");
 
             disabledColIds=this.state.bjtjColumnsId[this.state.区域职能1字段]+","+this.state.bjtjColumnsId[this.state.区域职能2字段]+","+this.state.bjtjColumnsId[this.state.所属部门字段]+","+this.state.bjtjColumnsId[this.state.报警围栏字段]+","+this.state.bjtjColumnsId[this.state.日字段]+","+this.state.bjtjColumnsId[this.state.月度周字段];
+            days=-365;
             this.state.详细X轴字号=9;
             this.state.xxAlignWithLabel=true;
         }
 
+        this.state.xxBarStartDate=this.getAddDate(days);
+        this.state.xxBarEndDate=this.getTodayDate();
         Super.super({
             url:`api2/entity/${this.state.menuId}/list/tmpl`,
             method:'GET',
@@ -2317,7 +2335,7 @@ class DataTj extends Component{
                                     </div>
                                 }
                                 else{
-                                    itemDiv=<div className="item_div" style={{marginTop:'-30px',marginLeft:'200px'}}>
+                                    itemDiv=<div className="item_div" style={{marginTop:'-30px',marginLeft:'180px'}}>
                                             <div className="text_span">{item}</div>
                                             <div className="count_span">{todayBjCountList[item]}</div>
                                         </div>
