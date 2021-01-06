@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "antd": "^4.2.5",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "echarts": "^4.7.0",
     "echarts-for-react": "^2.0.16",
     "jquery": "^3.5.1",
